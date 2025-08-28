@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
-import Link from 'next/link';
 
 const UserProfilePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [activeSettingsSection, setActiveSettingsSection] = useState('profile');
-  const [showOnboardingModal, setShowOnboardingModal] = useState(false);
+  const [, setShowOnboardingModal] = useState(false);
   const [showMessageDropdown, setShowMessageDropdown] = useState(false);
-  const [profileCompletion, setProfileCompletion] = useState(65);
+  const [profileCompletion, ] = useState(65);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Mock user data (same as before)

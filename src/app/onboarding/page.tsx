@@ -336,7 +336,7 @@ const OnboardingForm: React.FC = () => {
           {currentStep === 4 && (
             <div className="space-y-6">
               <div className="text-center">
-                <h3 className="text-2xl font-semibold text-gray-900 mb-2">What's your skill level? 📈</h3>
+                <h3 className="text-2xl font-semibold text-gray-900 mb-2">What&apos;s your skill level? 📈</h3>
                 <p className="text-gray-600">This helps us customize content difficulty for you</p>
               </div>
               
@@ -430,7 +430,7 @@ const OnboardingForm: React.FC = () => {
             <div className="space-y-6">
               <div className="text-center">
                 <h3 className="text-2xl font-semibold text-gray-900 mb-2">How do you want to contribute? 🤝</h3>
-                <p className="text-gray-600">Select all the ways you'd like to engage with our community</p>
+                <p className="text-gray-600">Select all the ways you&apos;d like to engage with our community</p>
               </div>
               
               <div className="space-y-3">
@@ -520,7 +520,7 @@ const OnboardingForm: React.FC = () => {
           {currentStep === totalSteps && (
             <div className="mt-6 text-center p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
               <h4 className="text-lg font-semibold text-gray-900 mb-2">🎉 Almost done!</h4>
-              <p className="text-gray-600">We'll tailor your dashboard and recommendations based on your choices. Get ready for a personalized experience!</p>
+              <p className="text-gray-600">We&apos;ll tailor your dashboard and recommendations based on your choices. Get ready for a personalized experience!</p>
             </div>
           )}
         </div>

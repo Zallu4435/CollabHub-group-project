@@ -1,12 +1,10 @@
 "use client"
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 
 const CommunityPage: React.FC = () => {
-  const [activeCategory, setActiveCategory] = useState('all');
-  const [selectedTopic, setSelectedTopic] = useState('general');
 
   const communityStats = [
     { label: 'Active Members', value: '25,000+', icon: '👥', color: 'from-blue-500 to-indigo-600' },

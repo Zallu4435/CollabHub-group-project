@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 
 const ProjectWorkspace: React.FC = () => {
   const [activeModule, setActiveModule] = useState('dashboard');
   const [viewMode, setViewMode] = useState<'kanban' | 'list' | 'calendar'>('kanban');
-  const [showInviteModal, setShowInviteModal] = useState(false);
-  const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
-  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [, setShowInviteModal] = useState(false);
+  const [, setShowCreateTaskModal] = useState(false);
+  const [, setShowRoleModal] = useState(false);
   const [showVideoCall, setShowVideoCall] = useState(false);
   const [chatChannel, setChatChannel] = useState('general');
 
@@ -469,7 +469,7 @@ const ProjectWorkspace: React.FC = () => {
                   <span className="font-medium text-gray-900">Sarah Kim</span>
                   <span className="text-xs text-gray-500">2:30 PM</span>
                 </div>
-                <p className="text-gray-800 mt-1">The new designs are looking great! I've uploaded the latest version to the Files section.</p>
+                <p className="text-gray-800 mt-1">The new designs are looking great! I&apos;ve uploaded the latest version to the Files section.</p>
               </div>
             </div>
           </div>

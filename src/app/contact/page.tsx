@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import Header from '../../components/Header';
 
 const ContactPage: React.FC = () => {
@@ -107,7 +106,7 @@ const ContactPage: React.FC = () => {
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Message Sent Successfully!</h2>
           <p className="text-gray-600 mb-6">
-            Thank you for contacting us. We'll get back to you within 24 hours.
+            Thank you for contacting us. We&apos;ll get back to you within 24 hours.
           </p>
           <button
             onClick={() => {
@@ -141,7 +140,7 @@ const ContactPage: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Get in Touch</h1>
           <p className="text-xl text-indigo-100 mb-8">
-            Have a question, suggestion, or just want to say hello? We'd love to hear from you.
+            Have a question, suggestion, or just want to say hello? We&apos;d love to hear from you.
           </p>
           <div className="flex items-center justify-center space-x-8 text-sm text-indigo-200">
             <div className="flex items-center">

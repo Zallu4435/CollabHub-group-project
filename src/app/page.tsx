@@ -308,7 +308,7 @@ const CommunityPlatformPage: React.FC = () => {
                 </div>
               </div>
               <p className="text-gray-700 mb-4">
-                "This platform has transformed how I showcase my projects and connect with other developers. Amazing community!"
+                &quot;This platform has transformed how I showcase my projects and connect with other developers. Amazing community&quot;
               </p>
               <div className="flex space-x-1">
                 {[...Array(5)].map((_, i) => (
@@ -329,7 +329,7 @@ const CommunityPlatformPage: React.FC = () => {
                 </div>
               </div>
               <p className="text-gray-700 mb-4">
-                "The marketplace feature helped me scale my business. I've found great clients and collaborators here!"
+                &quot;The marketplace feature helped me scale my business. I&apos;ve found great clients and collaborators here!&quot;
               </p>
               <div className="flex space-x-1">
                 {[...Array(5)].map((_, i) => (
@@ -350,7 +350,7 @@ const CommunityPlatformPage: React.FC = () => {
                 </div>
               </div>
               <p className="text-gray-700 mb-4">
-                "Love how I can blog, share projects, and engage with my audience all in one place. Highly recommended!"
+                &quot;Love how I can blog, share projects, and engage with my audience all in one place. Highly recommended!&quot;
               </p>
               <div className="flex space-x-1">
                 {[...Array(5)].map((_, i) => (

@@ -150,7 +150,7 @@ const AboutPage: React.FC = () => {
                 <div className="absolute inset-0 bg-black opacity-10"></div>
                 <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
                     <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                        We're Building the <span className="text-yellow-300">Future</span> of Collaboration
+                        We&apos;re Building the <span className="text-yellow-300">Future</span> of Collaboration
                     </h1>
                     <p className="text-xl md:text-2xl mb-8 text-purple-100 max-w-3xl mx-auto">
                         ConnectHub was born from a simple belief: great things happen when people can collaborate seamlessly, without barriers or limitations.
@@ -190,7 +190,7 @@ const AboutPage: React.FC = () => {
                             <h3 className="text-2xl font-semibold text-gray-900 mb-4">The Problem We Saw</h3>
                             <p className="text-gray-600 mb-6 leading-relaxed">
                                 Teams were spending more time managing tools than actually creating value.
-                                Remote work made collaboration even harder. We realized that the solution wasn't
+                                Remote work made collaboration even harder. We realized that the solution wasn&apos;t
                                 to build another tool—it was to build a platform that could replace them all.
                             </p>
                             <div className="space-y-3">
@@ -265,9 +265,9 @@ const AboutPage: React.FC = () => {
                             </div>
                             <h3 className="text-2xl font-semibold text-gray-900 mb-4">Our Vision</h3>
                             <p className="text-gray-600 text-lg leading-relaxed">
-                                A world where distance doesn't matter, where every team has access to enterprise-grade
+                                A world where distance doesn&apos;t matter, where every team has access to enterprise-grade
                                 collaboration tools, and where communities can thrive and monetize their expertise.
-                                We're building the infrastructure for the future of work.
+                                We&apos;re building the infrastructure for the future of work.
                             </p>
                         </div>
                     </div>
@@ -339,7 +339,7 @@ const AboutPage: React.FC = () => {
                 <div className="mb-20">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">By the Numbers</h2>
-                        <p className="text-lg text-gray-600">The impact we've made together</p>
+                        <p className="text-lg text-gray-600">The impact we&apos;ve made together</p>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
@@ -390,7 +390,7 @@ const AboutPage: React.FC = () => {
                 <div className="mb-20">
                     <div className="text-center mb-12">
                         <h2 className="text-2xl font-bold text-gray-900 mb-4">Backed by Industry Leaders</h2>
-                        <p className="text-gray-600">We're grateful to have the support of world-class investors</p>
+                        <p className="text-gray-600">We&apos;re grateful to have the support of world-class investors</p>
                     </div>
 
                     <div className="flex items-center justify-center flex-wrap gap-8 opacity-60">
@@ -408,7 +408,7 @@ const AboutPage: React.FC = () => {
                         <div className="text-center mb-8">
                             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Join Our Mission</h2>
                             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                                We're always looking for passionate, talented people who want to help shape the future of collaboration.
+                                We&apos;re always looking for passionate, talented people who want to help shape the future of collaboration.
                             </p>
                         </div>
 
@@ -451,7 +451,7 @@ const AboutPage: React.FC = () => {
                     <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Connect?</h2>
                     <p className="text-xl mb-8 text-indigo-100 max-w-2xl mx-auto">
                         Whether you want to learn more about our platform, explore partnership opportunities,
-                        or just say hello, we'd love to hear from you.
+                        or just say hello, we&apos;d love to hear from you.
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

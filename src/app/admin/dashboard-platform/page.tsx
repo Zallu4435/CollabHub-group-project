@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 
 const PlatformAdminDashboard: React.FC = () => {
   const [activeSection, setActiveSection] = useState('dashboard');

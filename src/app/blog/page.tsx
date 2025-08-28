@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 const BlogHomepage: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState('all');

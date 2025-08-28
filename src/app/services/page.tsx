@@ -119,8 +119,8 @@ const ServicesPage: React.FC = () => {
     }
   ];
 
-  const filteredServices = activeCategory === 'all' 
-    ? services 
+  const filteredServices = activeCategory === 'all'
+    ? services
     : services.filter(service => service.category === activeCategory);
 
   const testimonials = [
@@ -211,7 +211,7 @@ const ServicesPage: React.FC = () => {
           <p className="text-xl md:text-2xl mb-8 text-purple-100">
             Everything you need to collaborate, create, and scale your projects in one integrated platform.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
             <button className="px-8 py-4 bg-yellow-400 text-purple-900 font-bold text-lg rounded-2xl hover:bg-yellow-300 transform hover:scale-105 transition-all duration-200 shadow-xl">
               Explore All Services
@@ -243,19 +243,18 @@ const ServicesPage: React.FC = () => {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Platform Services</h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-8">
-            Comprehensive solutions for modern teams and organizations. From project management to community building, we've got you covered.
+            Comprehensive solutions for modern teams and organizations. From project management to community building, we&apos;ve got you covered.
           </p>
-          
+
           <div className="flex flex-wrap justify-center gap-2 mb-8">
             {serviceCategories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setActiveCategory(category.id)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  activeCategory === category.id
+                className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${activeCategory === category.id
                     ? 'bg-indigo-600 text-white shadow-md'
                     : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'
-                }`}
+                  }`}
               >
                 <span>{category.icon}</span>
                 <span>{category.name}</span>
@@ -274,7 +273,7 @@ const ServicesPage: React.FC = () => {
               onMouseLeave={() => setHoveredService(null)}
             >
               <div className={`h-2 bg-gradient-to-r ${service.color}`}></div>
-              
+
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className={`w-12 h-12 bg-gradient-to-r ${service.color} rounded-xl flex items-center justify-center text-2xl`}>
@@ -286,10 +285,10 @@ const ServicesPage: React.FC = () => {
                     </span>
                   )}
                 </div>
-                
+
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">{service.title}</h3>
                 <p className="text-gray-600 mb-4 line-clamp-2">{service.description}</p>
-                
+
                 <div className="space-y-2 mb-6">
                   {service.features.slice(0, 3).map((feature, index) => (
                     <div key={index} className="flex items-center text-sm text-gray-600">
@@ -305,14 +304,13 @@ const ServicesPage: React.FC = () => {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="text-lg font-bold text-gray-900">{service.pricing}</div>
-                  <button className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    hoveredService === service.id
+                  <button className={`px-4 py-2 rounded-lg font-medium transition-all ${hoveredService === service.id
                       ? `bg-gradient-to-r ${service.color} text-white shadow-md`
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}>
+                    }`}>
                     Learn More
                   </button>
                 </div>
@@ -366,7 +364,7 @@ const ServicesPage: React.FC = () => {
         <div className="mb-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h2>
-            <p className="text-lg text-gray-600">Choose the plan that's right for your team</p>
+            <p className="text-lg text-gray-600">Choose the plan that&apos;s right for your team</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -379,7 +377,7 @@ const ServicesPage: React.FC = () => {
                     </span>
                   </div>
                 )}
-                
+
                 <div className="text-center mb-8">
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">{plan.name}</h3>
                   <div className="flex items-baseline justify-center mb-2">
@@ -388,7 +386,7 @@ const ServicesPage: React.FC = () => {
                   </div>
                   <p className="text-gray-600">{plan.description}</p>
                 </div>
-                
+
                 <ul className="space-y-3 mb-8">
                   {plan.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-center text-gray-700">
@@ -399,12 +397,11 @@ const ServicesPage: React.FC = () => {
                     </li>
                   ))}
                 </ul>
-                
-                <button className={`w-full py-3 rounded-lg font-semibold transition-colors ${
-                  plan.popular
+
+                <button className={`w-full py-3 rounded-lg font-semibold transition-colors ${plan.popular
                     ? 'bg-indigo-600 text-white hover:bg-indigo-700'
                     : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                }`}>
+                  }`}>
                   {plan.name === 'Enterprise' ? 'Contact Sales' : 'Get Started'}
                 </button>
               </div>
@@ -429,11 +426,11 @@ const ServicesPage: React.FC = () => {
                     </svg>
                   ))}
                 </div>
-                
+
                 <blockquote className="text-gray-800 mb-6 italic">
-                  "{testimonial.quote}"
+                  &quot;{testimonial.quote}&quot;
                 </blockquote>
-                
+
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gray-300 rounded-full mr-4"></div>
                   <div>
@@ -477,7 +474,7 @@ const ServicesPage: React.FC = () => {
             <p className="text-xl mb-8 text-indigo-100">
               Join thousands of teams already using our platform to build, collaborate, and scale.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
               <button className="px-8 py-4 bg-yellow-400 text-purple-900 font-bold text-lg rounded-2xl hover:bg-yellow-300 transform hover:scale-105 transition-all duration-200 shadow-xl">
                 Start Free Trial
@@ -534,7 +531,7 @@ const ServicesPage: React.FC = () => {
                 ))}
               </div>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-4">Services</h4>
               <ul className="space-y-2 text-gray-400">
@@ -544,7 +541,7 @@ const ServicesPage: React.FC = () => {
                 <li><Link href="#" className="hover:text-white transition-colors">Video Conferencing</Link></li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-gray-400">
@@ -555,7 +552,7 @@ const ServicesPage: React.FC = () => {
               </ul>
             </div>
           </div>
-          
+
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
             <p>&copy; 2025 ConnectHub. All rights reserved.</p>
           </div>

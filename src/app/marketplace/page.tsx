@@ -5,7 +5,6 @@ import Link from 'next/link';
 
 const MarketplaceLandingPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState('all');
 
   // Mock data for categories
   const categories = [
@@ -280,7 +279,7 @@ const MarketplaceLandingPage: React.FC = () => {
         <div className="py-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Explore Categories</h2>
-            <p className="text-lg text-gray-600">Find exactly what you're looking for in our diverse marketplace</p>
+            <p className="text-lg text-gray-600">Find exactly what you&apos;re looking for in our diverse marketplace</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -537,7 +536,7 @@ const MarketplaceLandingPage: React.FC = () => {
         <div className="py-16 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Ready to Join MarketHub?</h2>
           <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Whether you're looking to buy amazing products or start selling your own creations, we've got everything you need to succeed.
+            Whether you&apos;re looking to buy amazing products or start selling your own creations, we&apos;ve got everything you need to succeed.
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
