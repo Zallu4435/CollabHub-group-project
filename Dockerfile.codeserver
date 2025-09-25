@@ -1,0 +1,18 @@
+FROM codercom/code-server:latest
+
+# Install additional extensions
+USER root
+RUN code-server --install-extension ms-python.python
+RUN code-server --install-extension ms-vscode.vscode-typescript-next
+RUN code-server --install-extension esbenp.prettier-vscode
+RUN code-server --install-extension ms-vscode.vscode-eslint
+RUN code-server --install-extension bradlc.vscode-tailwindcss
+RUN code-server --install-extension ms-vscode.vscode-json
+
+USER coder
+
+# Set working directory
+WORKDIR /home/coder/projects
+
+# Expose port
+EXPOSE 8080

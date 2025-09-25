@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  code-server:
+    image: codercom/code-server:latest
+    container_name: code-server
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./projects:/home/coder/projects
+      - code-server-config:/home/coder/.config/code-server
+    environment:
+      - PASSWORD=mypassword123
+    command: >
+      --bind-addr 0.0.0.0:8080
+      --auth password
+      --disable-telemetry
+      --disable-update-check
+      /home/coder/projects
+    restart: unless-stopped
+
+volumes:
+  code-server-config:

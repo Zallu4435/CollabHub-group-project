@@ -445,7 +445,7 @@ const CommunityPlatformPage: React.FC = () => {
               <h3 className="text-lg font-semibold mb-4">Platform</h3>
               <ul className="space-y-2 text-gray-400">
                 <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Projects</a></li>
+                <li><a href="/project" className="hover:text-white transition-colors">Projects</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Marketplace</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Posts</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Q&A</a></li>
