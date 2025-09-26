@@ -24,3 +24,225 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Google Docs-like editor styling */
+.ProseMirror {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+  font-size: 11pt;
+  line-height: 1.15;
+  color: #202124;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.ProseMirror:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Ensure proper cursor behavior - blinking cursor */
+.ProseMirror:focus .ProseMirror-cursor {
+  display: inline-block;
+  width: 0;
+  border-right: 2px solid #202124;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Placeholder text styling */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #5f6368;
+  pointer-events: none;
+  height: 0;
+  font-style: italic;
+}
+
+/* Remove any selection highlighting that might look like a box */
+.ProseMirror .selectedCell {
+  background: transparent !important;
+}
+
+/* Text selection styling */
+.ProseMirror ::selection {
+  background: #b3d4fc;
+}
+
+/* Paragraph styling for Google Docs look */
+.ProseMirror p {
+  margin: 0 0 8pt 0;
+  padding: 0;
+}
+
+.ProseMirror h1 {
+  font-size: 20pt;
+  font-weight: 400;
+  margin: 0 0 12pt 0;
+  padding: 0;
+}
+
+.ProseMirror h2 {
+  font-size: 16pt;
+  font-weight: 400;
+  margin: 0 0 8pt 0;
+  padding: 0;
+}
+
+.ProseMirror h3 {
+  font-size: 14pt;
+  font-weight: 400;
+  margin: 0 0 8pt 0;
+  padding: 0;
+}
+
+/* Preview styling to match editor exactly */
+.preview-content {
+  font-family: 'Google Sans', 'Roboto', Arial, sans-serif !important;
+  font-size: 11pt !important;
+  line-height: 1.15 !important;
+  color: #202124 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.preview-content p {
+  margin: 0 0 8pt 0 !important;
+  padding: 0 !important;
+}
+
+.preview-content h1 {
+  font-size: 20pt !important;
+  font-weight: 400 !important;
+  margin: 0 0 12pt 0 !important;
+  padding: 0 !important;
+}
+
+.preview-content h2 {
+  font-size: 16pt !important;
+  font-weight: 400 !important;
+  margin: 0 0 8pt 0 !important;
+  padding: 0 !important;
+}
+
+.preview-content h3 {
+  font-size: 14pt !important;
+  font-weight: 400 !important;
+  margin: 0 0 8pt 0 !important;
+  padding: 0 !important;
+}
+
+/* Markdown Preview Styling */
+.markdown-preview {
+  font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+  line-height: 1.6;
+  color: #202124;
+}
+
+.markdown-preview h1,
+.markdown-preview h2,
+.markdown-preview h3,
+.markdown-preview h4,
+.markdown-preview h5,
+.markdown-preview h6 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.markdown-preview h1:first-child,
+.markdown-preview h2:first-child,
+.markdown-preview h3:first-child,
+.markdown-preview h4:first-child,
+.markdown-preview h5:first-child,
+.markdown-preview h6:first-child {
+  margin-top: 0;
+}
+
+.markdown-preview p {
+  margin-bottom: 1em;
+}
+
+.markdown-preview ul,
+.markdown-preview ol {
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+
+.markdown-preview li {
+  margin-bottom: 0.25em;
+}
+
+.markdown-preview blockquote {
+  margin: 1em 0;
+  padding-left: 1em;
+  border-left: 4px solid #e5e7eb;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.markdown-preview code {
+  background-color: #f3f4f6;
+  padding: 0.125em 0.25em;
+  border-radius: 0.25rem;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.875em;
+}
+
+.markdown-preview pre {
+  background-color: #1f2937;
+  color: #f9fafb;
+  padding: 1em;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.markdown-preview pre code {
+  background-color: transparent;
+  padding: 0;
+  color: inherit;
+}
+
+.markdown-preview table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+}
+
+.markdown-preview th,
+.markdown-preview td {
+  border: 1px solid #d1d5db;
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+
+.markdown-preview th {
+  background-color: #f9fafb;
+  font-weight: 600;
+}
+
+.markdown-preview a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.markdown-preview a:hover {
+  color: #1d4ed8;
+}
+
+.markdown-preview hr {
+  border: none;
+  border-top: 1px solid #d1d5db;
+  margin: 2em 0;
+}
