@@ -86,6 +86,25 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor, onUpload }) => {
         <div className="flex items-center py-2 px-4">
         {/* Clipboard Group */}
         <div className="flex items-center space-x-1 pr-4">
+          {/* Undo / Redo */}
+          <div className="flex items-center space-x-1 mr-2">
+            <button
+              className={`p-2 rounded border ${editor?.can().undo() ? 'border-gray-300 bg-white hover:bg-gray-50' : 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+              onClick={() => editor?.chain().focus().undo().run()}
+              title="Undo (Ctrl/Cmd+Z)"
+              disabled={!editor?.can().undo()}
+            >
+              <Undo className="w-4 h-4" />
+            </button>
+            <button
+              className={`p-2 rounded border ${editor?.can().redo() ? 'border-gray-300 bg-white hover:bg-gray-50' : 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+              onClick={() => editor?.chain().focus().redo().run()}
+              title="Redo (Ctrl/Cmd+Shift+Z)"
+              disabled={!editor?.can().redo()}
+            >
+              <Redo className="w-4 h-4" />
+            </button>
+          </div>
           <button 
             className="flex items-center space-x-1 px-3 py-2 hover:bg-blue-50 hover:border-blue-300 rounded border border-gray-300 bg-white transition-colors"
             onClick={() => navigator.clipboard.writeText('')}

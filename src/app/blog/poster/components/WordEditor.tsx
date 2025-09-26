@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Editor } from '@tiptap/react';
 import mammoth from 'mammoth';
 import { marked } from 'marked';
@@ -8,6 +8,8 @@ import { Toolbar } from './Toolbar';
 import { ViewControls } from './ViewControls';
 import PreviewPopup from './PreviewPopup';
 import { EditorWrapper } from './EditorWrapper';
+import { CollaborativeEditor } from './CollaborativeEditor';
+import { CollaborativeSidebar } from './CollaborativeSidebar';
 import { ViewMode } from './types';
 import MarkdownEditor from './MarkdownEditor';
 
@@ -19,6 +21,14 @@ export const WordEditor: React.FC = () => {
   const [editor, setEditor] = useState<Editor | null>(null);
   const [markdownContent, setMarkdownContent] = useState<string>('');
   const [isMarkdownEditor, setIsMarkdownEditor] = useState(false);
+  const [isCollaborativeMode, setIsCollaborativeMode] = useState(true);
+  const [userName, setUserName] = useState<string>('Anonymous');
+  const [roomId, setRoomId] = useState<string>('collaborative-editing');
+  const [roomKey, setRoomKey] = useState<string>('');
+  const [isAdmin, setIsAdmin] = useState<boolean>(true);
+  const [approvalRequired, setApprovalRequired] = useState<boolean>(false);
+  const [allowlistText, setAllowlistText] = useState<string>('');
+  const [connectedUsers, setConnectedUsers] = useState<Array<{ name: string; color: string }>>([]);
 
   // Function to convert markdown to HTML
   const markdownToHtml = (markdown: string): string => {
@@ -79,6 +89,39 @@ export const WordEditor: React.FC = () => {
     setIsMarkdownEditor(!isMarkdownEditor);
   };
 
+  // Toggle collaborative mode
+  const toggleCollaborativeMode = () => {
+    setIsCollaborativeMode(!isCollaborativeMode);
+  };
+
+  // Handle user name change
+  const handleUserNameChange = (newName: string) => {
+    setUserName(newName);
+  };
+
+  // Handle room ID change
+  const handleRoomIdChange = (newRoomId: string) => {
+    setRoomId(newRoomId);
+  };
+
+  const handleRoomKeyChange = (newKey: string) => {
+    setRoomKey(newKey);
+  };
+
+  const toggleAdmin = () => setIsAdmin(prev => !prev);
+  const toggleApprovalRequired = () => setApprovalRequired(prev => !prev);
+
+  // Parse URL params on mount for roomId and optional key
+  React.useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const idFromUrl = params.get('roomId');
+      const keyFromUrl = params.get('key');
+      if (idFromUrl) setRoomId(idFromUrl);
+      if (keyFromUrl) setRoomKey(keyFromUrl);
+    } catch {}
+  }, []);
+
   // Implemented file upload logic
   const handleUpload = async (file: File) => {
     if (!editor) return;
@@ -111,6 +154,89 @@ export const WordEditor: React.FC = () => {
       );
     }
 
+    // Collaborative Editor Mode
+    if (isCollaborativeMode) {
+      if (viewMode === 'editor-only') {
+        return (
+          <CollaborativeEditor 
+            onHtmlChange={setHtml} 
+            onEditorReady={setEditor}
+            roomId={roomId}
+            userName={userName}
+            roomKey={roomKey}
+            isAdmin={isAdmin}
+            onUsersChange={setConnectedUsers}
+          />
+        );
+      }
+      
+      // Side-by-Side View with Collaborative Editor
+      return (
+        <div className="flex-1 flex bg-gray-100 overflow-hidden">
+          {/* Editor Pane */}
+          <div 
+            className="overflow-y-auto"
+            style={{ width: `${100 - previewSize}%` }}
+          >
+            <CollaborativeEditor 
+              onHtmlChange={setHtml} 
+              onEditorReady={setEditor}
+              roomId={roomId}
+              userName={userName}
+              roomKey={roomKey}
+              isAdmin={isAdmin}
+              onUsersChange={setConnectedUsers}
+            />
+          </div>
+          {/* Preview Pane */}
+          <div 
+            className="overflow-y-auto border-l border-gray-300 bg-gray-100"
+            style={{ width: `${previewSize}%` }}
+          >
+            <div className="flex flex-col h-full">
+              {/* Preview header */}
+              <div className="bg-white border-b border-gray-300 px-4 py-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Live Preview</span>
+                  <div className="flex items-center space-x-2">
+                    <button 
+                      className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                      onClick={() => window.print()}
+                      title="Print document"
+                    >
+                      Print
+                    </button>
+                    <button 
+                      className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                      onClick={() => navigator.clipboard.writeText(html.replace(/<[^>]*>/g, ''))}
+                      title="Copy text content"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Document page */}
+              <div className="flex-1 flex justify-center py-8 px-4">
+                <div className="w-full max-w-4xl">
+                  <div className="bg-white shadow-lg min-h-[11in] p-12 relative" style={{ 
+                    width: '8.5in',
+                    minHeight: '11in',
+                    margin: '0 auto',
+                    boxShadow: '0 0 0 1px rgba(0,0,0,0.1), 0 2px 10px rgba(0,0,0,0.1)'
+                  }}>
+                    <div className="min-h-[10in] w-full outline-none focus:outline-none">
+                      <div className="preview-content" dangerouslySetInnerHTML={{ __html: html }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
 
     // Editor-Only View (already good)
     if (viewMode === 'editor-only') {
@@ -244,10 +370,36 @@ export const WordEditor: React.FC = () => {
         setIsPreviewPopup={setIsPreviewPopup}
         isMarkdownEditor={isMarkdownEditor}
         onToggleMarkdownEditor={toggleMarkdownEditor}
+        isCollaborativeMode={isCollaborativeMode}
+        onToggleCollaborativeMode={toggleCollaborativeMode}
+        userName={userName}
+        onUserNameChange={handleUserNameChange}
+        roomId={roomId}
+        onRoomIdChange={handleRoomIdChange}
+        roomKey={roomKey}
+        onRoomKeyChange={handleRoomKeyChange}
+        isAdmin={isAdmin}
+        onToggleAdmin={toggleAdmin}
+        approvalRequired={approvalRequired}
+        onToggleApprovalRequired={toggleApprovalRequired}
+        allowlistText={allowlistText}
+        onAllowlistTextChange={setAllowlistText}
       />
       
-      <main className="flex-1 flex flex-col overflow-hidden">
-        {renderContent()}
+      <main className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {renderContent()}
+        </div>
+        
+        {/* Collaborative Sidebar */}
+        {isCollaborativeMode && (
+          <CollaborativeSidebar 
+            roomId={roomId}
+            userName={userName}
+            onUsersChange={setConnectedUsers}
+            collaborativeUsersExternal={connectedUsers}
+          />
+        )}
       </main>
       
       <PreviewPopup 
@@ -264,7 +416,15 @@ export const WordEditor: React.FC = () => {
           <span>Characters: {editor?.storage.characterCount.characters() ?? 0}</span>
         </div>
         <div className="flex items-center space-x-2">
-          <span>Collaborative editing enabled</span>
+          {isCollaborativeMode ? (
+            <>
+              <span>Collaborative editing enabled</span>
+              <span>•</span>
+              <span>{connectedUsers.length} users connected</span>
+            </>
+          ) : (
+            <span>Single user mode</span>
+          )}
         </div>
       </footer>
     </div>

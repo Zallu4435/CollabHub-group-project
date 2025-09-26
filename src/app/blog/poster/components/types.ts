@@ -16,6 +16,20 @@ export interface ViewControlsProps {
   setIsPreviewPopup: (popup: boolean) => void;
   isMarkdownEditor?: boolean;
   onToggleMarkdownEditor?: () => void;
+  isCollaborativeMode?: boolean;
+  onToggleCollaborativeMode?: () => void;
+  userName?: string;
+  onUserNameChange?: (name: string) => void;
+  roomId?: string;
+  onRoomIdChange?: (roomId: string) => void;
+  isAdmin?: boolean;
+  onToggleAdmin?: () => void;
+  roomKey?: string;
+  onRoomKeyChange?: (key: string) => void;
+  approvalRequired?: boolean;
+  onToggleApprovalRequired?: () => void;
+  allowlistText?: string;
+  onAllowlistTextChange?: (text: string) => void;
 }
 
 export interface EditorWrapperProps {
