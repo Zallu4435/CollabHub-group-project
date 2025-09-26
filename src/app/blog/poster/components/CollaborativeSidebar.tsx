@@ -28,12 +28,22 @@ export const CollaborativeSidebar: React.FC<CollaborativeSidebarProps> = ({
   const [collaborativeUsers, setCollaborativeUsers] = useState<User[]>([]);
   const [voiceUsers, setVoiceUsers] = useState<User[]>([]);
 
-  // Sync external collaborative users from parent (WordEditor)
-  React.useEffect(() => {
-    if (collaborativeUsersExternal) {
-      setCollaborativeUsers(collaborativeUsersExternal);
-    }
+  // Sync external collaborative users from parent (WordEditor) with change check
+  const lastExternalRef = React.useRef<string>('');
+  const externalSerialized = React.useMemo(() => {
+    try { return JSON.stringify(collaborativeUsersExternal ?? []); } catch { return '[]'; }
   }, [collaborativeUsersExternal]);
+  React.useEffect(() => {
+    if (!collaborativeUsersExternal) return;
+    if (externalSerialized !== lastExternalRef.current) {
+      lastExternalRef.current = externalSerialized;
+      // Only update if shallow different length or any element differs by name/color
+      const prev = collaborativeUsers;
+      const next = collaborativeUsersExternal;
+      const shallowSame = prev.length === next.length && prev.every((u, i) => u.name === next[i].name && u.color === next[i].color && !!u.isVoiceConnected === !!next[i].isVoiceConnected);
+      if (!shallowSame) setCollaborativeUsers(next);
+    }
+  }, [externalSerialized, collaborativeUsersExternal, collaborativeUsers]);
 
   // Combine users from both collaborative editing and voice chat
   const allUsers = React.useMemo(() => {
@@ -60,10 +70,14 @@ export const CollaborativeSidebar: React.FC<CollaborativeSidebarProps> = ({
   // Notify parent component of user changes only when list actually changes
   const lastUsersRef = React.useRef<string>('');
   React.useEffect(() => {
-    const serialized = JSON.stringify(allUsers);
-    if (serialized !== lastUsersRef.current) {
-      lastUsersRef.current = serialized;
-      onUsersChange?.(allUsers);
+    try {
+      const serialized = JSON.stringify(allUsers);
+      if (serialized !== lastUsersRef.current) {
+        lastUsersRef.current = serialized;
+        onUsersChange?.(allUsers);
+      }
+    } catch {
+      // If serialization fails, avoid spamming parent
     }
   }, [allUsers, onUsersChange]);
 

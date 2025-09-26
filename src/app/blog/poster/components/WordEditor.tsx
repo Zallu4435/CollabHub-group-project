@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Editor } from '@tiptap/react';
 import mammoth from 'mammoth';
 import { marked } from 'marked';
@@ -29,6 +29,10 @@ export const WordEditor: React.FC = () => {
   const [approvalRequired, setApprovalRequired] = useState<boolean>(false);
   const [allowlistText, setAllowlistText] = useState<string>('');
   const [connectedUsers, setConnectedUsers] = useState<Array<{ name: string; color: string }>>([]);
+  const [draftId, setDraftId] = useState<string | null>(null);
+  const [returnTo, setReturnTo] = useState<string | null>(null);
+
+  const draftStorageKey = useMemo(() => (draftId ? `poster:draft:${draftId}` : null), [draftId]);
 
   // Function to convert markdown to HTML
   const markdownToHtml = (markdown: string): string => {
@@ -117,10 +121,65 @@ export const WordEditor: React.FC = () => {
       const params = new URLSearchParams(window.location.search);
       const idFromUrl = params.get('roomId');
       const keyFromUrl = params.get('key');
+      const draftFromUrl = params.get('draftId');
+      const returnToFromUrl = params.get('returnTo');
       if (idFromUrl) setRoomId(idFromUrl);
       if (keyFromUrl) setRoomKey(keyFromUrl);
+      if (draftFromUrl) setDraftId(draftFromUrl);
+      if (returnToFromUrl) setReturnTo(returnToFromUrl);
     } catch {}
   }, []);
+
+  // Load initial draft content from localStorage when editor becomes ready
+  React.useEffect(() => {
+    if (!editor || !draftStorageKey) return;
+    try {
+      const stored = localStorage.getItem(draftStorageKey);
+      if (stored) {
+        const parsed = JSON.parse(stored) as { html?: string };
+        const initialHtml = parsed?.html ?? '';
+        if (initialHtml) {
+          editor.commands.setContent(initialHtml, { emitUpdate: true });
+          setHtml(initialHtml);
+        }
+      }
+    } catch {}
+  }, [editor, draftStorageKey]);
+
+  // Debounced autosave to localStorage when html changes
+  React.useEffect(() => {
+    if (!draftStorageKey) return;
+    const handle = setTimeout(() => {
+      try {
+        const payload = JSON.stringify({ html });
+        localStorage.setItem(draftStorageKey, payload);
+      } catch {}
+    }, 500);
+    return () => clearTimeout(handle);
+  }, [html, draftStorageKey]);
+
+  // Actions: Save & Return and Cancel
+  const handleSaveAndReturn = () => {
+    if (returnTo) {
+      // Ensure latest content saved
+      try {
+        if (draftStorageKey) localStorage.setItem(draftStorageKey, JSON.stringify({ html }));
+      } catch {}
+      window.location.href = `${returnTo}${returnTo.includes('?') ? '&' : '?'}draftId=${encodeURIComponent(draftId ?? '')}`;
+    } else {
+      window.history.back();
+    }
+  };
+
+  const handleCancel = () => {
+    const ok = window.confirm('Discard and return? Your latest autosave will be kept.');
+    if (!ok) return;
+    if (returnTo) {
+      window.location.href = `${returnTo}${returnTo.includes('?') ? '&' : '?'}draftId=${encodeURIComponent(draftId ?? '')}`;
+    } else {
+      window.history.back();
+    }
+  };
 
   // Implemented file upload logic
   const handleUpload = async (file: File) => {
@@ -360,7 +419,13 @@ export const WordEditor: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <Toolbar editor={editor} onUpload={handleUpload} />
+      <Toolbar 
+        editor={editor} 
+        onUpload={handleUpload} 
+        onSaveReturn={handleSaveAndReturn}
+        onCancel={handleCancel}
+        draftId={draftId}
+      />
       <ViewControls 
         viewMode={viewMode}
         setViewMode={setViewMode}
@@ -397,7 +462,7 @@ export const WordEditor: React.FC = () => {
             roomId={roomId}
             userName={userName}
             onUsersChange={setConnectedUsers}
-            collaborativeUsersExternal={connectedUsers}
+            collaborativeUsersExternal={React.useMemo(() => connectedUsers, [connectedUsers])}
           />
         )}
       </main>

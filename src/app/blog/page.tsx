@@ -35,7 +35,7 @@ const BlogHomepage: React.FC = () => {
               <Link href="/blog/search" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
                 Search
               </Link>
-              <Link href="/blog/poster" className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
+              <Link href="/blog/poster/new" className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
                 Write
               </Link>
               <Link href="/profile">

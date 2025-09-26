@@ -10,11 +10,22 @@ import {
 } from 'lucide-react';
 import { ToolbarProps, FONT_FAMILIES, FONT_SIZES, TABS } from './types';
 
-export const Toolbar: React.FC<ToolbarProps> = ({ editor, onUpload }) => {
+export const Toolbar: React.FC<ToolbarProps> = ({ editor, onUpload, onSaveReturn, onCancel, draftId }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState('Home');
   
+  // Normalize current font size for the select control (expects plain number string)
+  const currentFontSizeValue: string = (() => {
+    const raw = (editor?.getAttributes('textStyle') as any)?.fontSize;
+    if (raw == null) return '12';
+    if (typeof raw === 'number') return String(raw);
+    if (typeof raw === 'string') {
+      return raw.endsWith('pt') ? raw.slice(0, -2) : raw;
+    }
+    return '12';
+  })();
+
   const isActive = (name: string, attrs?: Record<string, any>) => 
     editor?.isActive(name as any, attrs) ?? false;
   
@@ -147,7 +158,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor, onUpload }) => {
           <select
             className="px-2 py-1 border border-gray-300 rounded text-sm bg-white text-black w-14"
             onChange={(e) => run()?.updateAttributes('textStyle', { fontSize: e.target.value + 'pt' }).run()}
-            value={(editor?.getAttributes('textStyle')?.fontSize as string)?.replace('pt', '') || '12'}
+            value={currentFontSizeValue}
           >
             {['8','9','10','11','12','14','16','18','20','24','28','36','48','72'].map(sz => (
               <option key={sz} value={sz}>{sz}</option>
@@ -462,20 +473,39 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor, onUpload }) => {
   return (
     <div className="bg-white w-full">
       {/* Tab Navigation */}
-      <div className="w-full flex items-center px-4 bg-gray-100 border-b border-gray-300">
-        {TABS.map(tab => (
+      <div className="w-full flex items-center justify-between px-4 bg-gray-100 border-b border-gray-300">
+        <div className="flex items-center">
+          {TABS.map(tab => (
+            <button
+              key={tab}
+              className={`px-3 py-2 text-sm font-medium ${
+                activeTab === tab 
+                  ? 'bg-white text-black border-t-2 border-blue-500' 
+                  : 'text-gray-600 hover:bg-gray-200'
+              }`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-2 py-2">
+          {draftId && (
+            <span className="hidden sm:inline text-xs text-gray-600 mr-2">Draft: {draftId}</span>
+          )}
           <button
-            key={tab}
-            className={`px-3 py-2 text-sm font-medium ${
-              activeTab === tab 
-                ? 'bg-white text-black border-t-2 border-blue-500' 
-                : 'text-gray-600 hover:bg-gray-200'
-            }`}
-            onClick={() => setActiveTab(tab)}
+            className="px-3 py-1.5 text-xs bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200"
+            onClick={onCancel}
           >
-            {tab}
+            Cancel
           </button>
-        ))}
+          <button
+            className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            onClick={onSaveReturn}
+          >
+            Save & Return
+          </button>
+        </div>
       </div>
 
       {/* Tab Content - Full Width */}

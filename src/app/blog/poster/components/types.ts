@@ -5,6 +5,9 @@ export type ViewMode = 'side-by-side' | 'preview-only' | 'editor-only' | 'popup'
 export interface ToolbarProps {
   editor: Editor | null;
   onUpload: (file: File) => void;
+  onSaveReturn?: () => void;
+  onCancel?: () => void;
+  draftId?: string | null;
 }
 
 export interface ViewControlsProps {
