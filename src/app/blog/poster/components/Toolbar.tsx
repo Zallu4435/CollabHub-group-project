@@ -1,11 +1,11 @@
 import React, { useRef, useState } from 'react';
 import {
-  Bold, Italic, Underline as UnderlineIcon, Strikethrough, 
+  Bold, Italic, Underline as UnderlineIcon, Strikethrough,
   List, ListOrdered, AlignLeft, AlignCenter, AlignRight, AlignJustify,
-  Link as LinkIcon, Unlink, Undo, Redo, Upload, FileText, Save, Printer, 
-  Share2, Search, Settings, HelpCircle, Table as TableIcon, Image as ImageIcon, 
-  CheckSquare, Superscript as SuperscriptIcon, Subscript as SubscriptIcon, 
-  IndentDecrease, IndentIncrease, Copy, Scissors, Clipboard, Monitor, 
+  Link as LinkIcon, Unlink, Undo, Redo, Upload, FileText, Save, Printer,
+  Share2, Search, Settings, HelpCircle, Table as TableIcon, Image as ImageIcon,
+  CheckSquare, Superscript as SuperscriptIcon, Subscript as SubscriptIcon,
+  IndentDecrease, IndentIncrease, Copy, Scissors, Clipboard, Monitor,
   ZoomIn, ZoomOut, ChevronDown, Palette, Type, MoreHorizontal, X, Eye, Code
 } from 'lucide-react';
 import { ToolbarProps, FONT_FAMILIES, FONT_SIZES, TABS } from './types';
@@ -14,7 +14,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor, onUpload, onSaveReturn
   const inputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState('Home');
-  
+
   // Normalize current font size for the select control (expects plain number string)
   const currentFontSizeValue: string = (() => {
     const raw = (editor?.getAttributes('textStyle') as any)?.fontSize;
@@ -26,9 +26,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor, onUpload, onSaveReturn
     return '12';
   })();
 
-  const isActive = (name: string, attrs?: Record<string, any>) => 
+  const isActive = (name: string, attrs?: Record<string, any>) =>
     editor?.isActive(name as any, attrs) ?? false;
-  
+
   const run = () => editor?.chain().focus();
 
   const insertTable = () => {
@@ -64,7 +64,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor, onUpload, onSaveReturn
           <span className="text-xs text-gray-700 font-medium">New</span>
         </div>
         <div className="flex flex-col items-center space-y-1">
-          <button 
+          <button
             className="p-3 hover:bg-gray-200 rounded border border-gray-300 bg-white"
             onClick={() => inputRef.current?.click()}
           >
@@ -95,291 +95,285 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor, onUpload, onSaveReturn
     Home: (
       <div className="w-full bg-gray-50">
         <div className="flex items-center py-2 px-4">
-        {/* Clipboard Group */}
-        <div className="flex items-center space-x-1 pr-4">
-          {/* Undo / Redo */}
-          <div className="flex items-center space-x-1 mr-2">
-            <button
-              className={`p-2 rounded border ${editor?.can().undo() ? 'border-gray-300 bg-white hover:bg-gray-50' : 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'}`}
-              onClick={() => editor?.chain().focus().undo().run()}
-              title="Undo (Ctrl/Cmd+Z)"
-              disabled={!editor?.can().undo()}
-            >
-              <Undo className="w-4 h-4" />
-            </button>
-            <button
-              className={`p-2 rounded border ${editor?.can().redo() ? 'border-gray-300 bg-white hover:bg-gray-50' : 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'}`}
-              onClick={() => editor?.chain().focus().redo().run()}
-              title="Redo (Ctrl/Cmd+Shift+Z)"
-              disabled={!editor?.can().redo()}
-            >
-              <Redo className="w-4 h-4" />
-            </button>
-          </div>
-          <button 
-            className="flex items-center space-x-1 px-3 py-2 hover:bg-blue-50 hover:border-blue-300 rounded border border-gray-300 bg-white transition-colors"
-            onClick={() => navigator.clipboard.writeText('')}
-            title="Paste"
-          >
-            <Clipboard className="w-4 h-4 text-gray-700" />
-            <span className="text-sm text-gray-700">Paste</span>
-            <ChevronDown className="w-3 h-3 text-gray-500" />
-          </button>
-          <div className="flex flex-col space-y-1">
-            <button className="p-1.5 hover:bg-gray-200 rounded border border-gray-300 bg-white w-8 h-7" title="Cut">
-              <Scissors className="w-3.5 h-3.5 text-gray-700 mx-auto" />
-            </button>
-            <button className="p-1.5 hover:bg-gray-200 rounded border border-gray-300 bg-white w-8 h-7" title="Copy">
-              <Copy className="w-3.5 h-3.5 text-gray-700 mx-auto" />
-            </button>
-          </div>
-          <button className="p-2 hover:bg-gray-200 rounded border border-gray-300 bg-white" title="Format Painter">
-            <div className="flex flex-col items-center">
-              <div className="w-3 h-3 border border-gray-700 rounded"></div>
-              <span className="text-xs text-black">A</span>
+          {/* Clipboard Group */}
+          <div className="flex items-center space-x-1 pr-4">
+            {/* Undo / Redo */}
+            <div className="flex items-center space-x-1 mr-2">
+              <button
+                className={`p-2 rounded border ${editor?.can().undo() ? 'border-gray-300 bg-white hover:bg-gray-50' : 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+                onClick={() => editor?.chain().focus().undo().run()}
+                title="Undo (Ctrl/Cmd+Z)"
+                disabled={!editor?.can().undo()}
+              >
+                <Undo className="w-4 h-4" />
+              </button>
+              <button
+                className={`p-2 rounded border ${editor?.can().redo() ? 'border-gray-300 bg-white hover:bg-gray-50' : 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+                onClick={() => editor?.chain().focus().redo().run()}
+                title="Redo (Ctrl/Cmd+Shift+Z)"
+                disabled={!editor?.can().redo()}
+              >
+                <Redo className="w-4 h-4" />
+              </button>
             </div>
-          </button>
-        </div>
-        
-        <div className="w-px h-8 bg-gray-300 mx-2" />
-        
-        {/* Font Group */}
-        <div className="flex items-center space-x-2 pr-4">
-          <select 
-            className="px-2 py-1 border border-gray-300 rounded text-sm bg-white text-black w-32"
-            value={(editor?.getAttributes('textStyle')?.fontFamily as string) || 'Aptos (Body)'}
-            onChange={(e) => run()?.setFontFamily(e.target.value).run()}
-          >
-            <option value="Aptos (Body)">Aptos (Body)</option>
-            {FONT_FAMILIES.map(font => (
-              <option key={font} value={font}>{font}</option>
-            ))}
-          </select>
-          <select
-            className="px-2 py-1 border border-gray-300 rounded text-sm bg-white text-black w-14"
-            onChange={(e) => run()?.updateAttributes('textStyle', { fontSize: e.target.value + 'pt' }).run()}
-            value={currentFontSizeValue}
-          >
-            {['8','9','10','11','12','14','16','18','20','24','28','36','48','72'].map(sz => (
-              <option key={sz} value={sz}>{sz}</option>
-            ))}
-          </select>
-          <div className="flex flex-col space-y-1">
-            <button className="p-1 hover:bg-gray-200 rounded border border-gray-300 bg-white w-8 h-7" title="Increase Font Size">
+            <button
+              className="flex items-center space-x-1 px-3 py-2 hover:bg-blue-50 hover:border-blue-300 rounded border border-gray-300 bg-white transition-colors"
+              onClick={() => navigator.clipboard.writeText('')}
+              title="Paste"
+            >
+              <Clipboard className="w-4 h-4 text-gray-700" />
+              <span className="text-sm text-gray-700">Paste</span>
+              <ChevronDown className="w-3 h-3 text-gray-500" />
+            </button>
+            <div className="flex flex-col space-y-1">
+              <button className="p-1.5 hover:bg-gray-200 rounded border border-gray-300 bg-white w-8 h-7" title="Cut">
+                <Scissors className="w-3.5 h-3.5 text-gray-700 mx-auto" />
+              </button>
+              <button className="p-1.5 hover:bg-gray-200 rounded border border-gray-300 bg-white w-8 h-7" title="Copy">
+                <Copy className="w-3.5 h-3.5 text-gray-700 mx-auto" />
+              </button>
+            </div>
+            <button className="p-2 hover:bg-gray-200 rounded border border-gray-300 bg-white" title="Format Painter">
+              <div className="flex flex-col items-center">
+                <div className="w-3 h-3 border border-gray-700 rounded"></div>
+                <span className="text-xs text-black">A</span>
+              </div>
+            </button>
+          </div>
+
+          <div className="w-px h-8 bg-gray-300 mx-2" />
+
+          {/* Font Group */}
+          <div className="flex items-center space-x-2 pr-4">
+            <select
+              className="px-2 py-1 border border-gray-300 rounded text-sm bg-white text-black w-32"
+              value={(editor?.getAttributes('textStyle')?.fontFamily as string) || 'Aptos (Body)'}
+              onChange={(e) => run()?.setFontFamily(e.target.value).run()}
+            >
+              <option value="Aptos (Body)">Aptos (Body)</option>
+              {FONT_FAMILIES.map(font => (
+                <option key={font} value={font}>{font}</option>
+              ))}
+            </select>
+            <select
+              className="px-2 py-1 border border-gray-300 rounded text-sm bg-white text-black w-14"
+              onChange={(e) => run()?.updateAttributes('textStyle', { fontSize: e.target.value + 'pt' }).run()}
+              value={currentFontSizeValue}
+            >
+              {['8', '9', '10', '11', '12', '14', '16', '18', '20', '24', '28', '36', '48', '72'].map(sz => (
+                <option key={sz} value={sz}>{sz}</option>
+              ))}
+            </select>
+            <div className="flex flex-col space-y-1">
+              <button className="p-1 hover:bg-gray-200 rounded border border-gray-300 bg-white w-8 h-7" title="Increase Font Size">
+                <div className="flex flex-col items-center">
+                  <Type className="w-3 h-3 text-black" />
+                  <span className="text-xs text-black">A</span>
+                </div>
+              </button>
+              <button className="p-1 hover:bg-gray-200 rounded border border-gray-300 bg-white w-8 h-7" title="Decrease Font Size">
+                <div className="flex flex-col items-center">
+                  <Type className="w-2.5 h-2.5 text-black" />
+                  <span className="text-xs text-black">A</span>
+                </div>
+              </button>
+            </div>
+            <button className="p-1.5 hover:bg-gray-200 rounded border border-gray-300 bg-white" title="Clear Formatting">
               <div className="flex flex-col items-center">
                 <Type className="w-3 h-3 text-black" />
                 <span className="text-xs text-black">A</span>
               </div>
             </button>
-            <button className="p-1 hover:bg-gray-200 rounded border border-gray-300 bg-white w-8 h-7" title="Decrease Font Size">
-              <div className="flex flex-col items-center">
-                <Type className="w-2.5 h-2.5 text-black" />
-                <span className="text-xs text-black">A</span>
-              </div>
-            </button>
           </div>
-          <button className="p-1.5 hover:bg-gray-200 rounded border border-gray-300 bg-white" title="Clear Formatting">
-            <div className="flex flex-col items-center">
-              <Type className="w-3 h-3 text-black" />
-              <span className="text-xs text-black">A</span>
+
+          <div className="flex items-center space-x-1 pr-4">
+            <button
+              className={`p-2 rounded transition-colors ${isActive('bold') ? 'bg-blue-100 border border-blue-400 text-blue-700' : 'border border-gray-300 bg-white hover:bg-gray-50'}`}
+              onClick={() => run()?.toggleBold().run()}
+              title="Bold"
+            >
+              <Bold className="w-4 h-4" />
+            </button>
+            <button
+              className={`p-2 rounded hover:bg-gray-200 ${isActive('italic') ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'}`}
+              onClick={() => run()?.toggleItalic().run()}
+              title="Italic"
+            >
+              <Italic className="w-4 h-4 text-black" />
+            </button>
+            <button
+              className={`p-2 rounded hover:bg-gray-200 ${isActive('underline') ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'}`}
+              onClick={() => run()?.toggleUnderline().run()}
+              title="Underline"
+            >
+              <UnderlineIcon className="w-4 h-4 text-black" />
+            </button>
+            <button
+              className={`p-2 rounded hover:bg-gray-200 ${isActive('strike') ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'}`}
+              onClick={() => run()?.toggleStrike().run()}
+              title="Strikethrough"
+            >
+              <Strikethrough className="w-4 h-4 text-black" />
+            </button>
+            <button
+              className={`p-2 rounded hover:bg-gray-200 ${isActive('subscript') ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'}`}
+              onClick={() => run()?.toggleSubscript().run()}
+              title="Subscript"
+            >
+              <SubscriptIcon className="w-4 h-4 text-black" />
+            </button>
+            <button
+              className={`p-2 rounded hover:bg-gray-200 ${isActive('superscript') ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'}`}
+              onClick={() => run()?.toggleSuperscript().run()}
+              title="Superscript"
+            >
+              <SuperscriptIcon className="w-4 h-4 text-black" />
+            </button>
+            <div className="flex items-center border border-gray-300 bg-white rounded">
+              <button className="p-2 hover:bg-gray-200" title="Change Case">
+                <div className="flex flex-col items-center">
+                  <Type className="w-3 h-3 text-black" />
+                  <span className="text-xs text-black">Aa</span>
+                </div>
+              </button>
+              <ChevronDown className="w-3 h-3 text-black" />
             </div>
-          </button>
-        </div>
-        
-        <div className="flex items-center space-x-1 pr-4">
-          <button 
-            className={`p-2 rounded transition-colors ${isActive('bold') ? 'bg-blue-100 border border-blue-400 text-blue-700' : 'border border-gray-300 bg-white hover:bg-gray-50'}`}
-            onClick={() => run()?.toggleBold().run()}
-            title="Bold"
-          >
-            <Bold className="w-4 h-4" />
-          </button>
-          <button 
-            className={`p-2 rounded hover:bg-gray-200 ${isActive('italic') ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'}`}
-            onClick={() => run()?.toggleItalic().run()}
-            title="Italic"
-          >
-            <Italic className="w-4 h-4 text-black" />
-          </button>
-          <button 
-            className={`p-2 rounded hover:bg-gray-200 ${isActive('underline') ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'}`}
-            onClick={() => run()?.toggleUnderline().run()}
-            title="Underline"
-          >
-            <UnderlineIcon className="w-4 h-4 text-black" />
-          </button>
-          <button 
-            className={`p-2 rounded hover:bg-gray-200 ${isActive('strike') ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'}`}
-            onClick={() => run()?.toggleStrike().run()}
-            title="Strikethrough"
-          >
-            <Strikethrough className="w-4 h-4 text-black" />
-          </button>
-          <button 
-            className={`p-2 rounded hover:bg-gray-200 ${isActive('subscript') ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'}`}
-            onClick={() => run()?.toggleSubscript().run()}
-            title="Subscript"
-          >
-            <SubscriptIcon className="w-4 h-4 text-black" />
-          </button>
-          <button 
-            className={`p-2 rounded hover:bg-gray-200 ${isActive('superscript') ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'}`}
-            onClick={() => run()?.toggleSuperscript().run()}
-            title="Superscript"
-          >
-            <SuperscriptIcon className="w-4 h-4 text-black" />
-          </button>
-          <div className="flex items-center border border-gray-300 bg-white rounded">
-            <button className="p-2 hover:bg-gray-200" title="Change Case">
-              <div className="flex flex-col items-center">
-                <Type className="w-3 h-3 text-black" />
-                <span className="text-xs text-black">Aa</span>
-              </div>
-            </button>
-            <ChevronDown className="w-3 h-3 text-black" />
+            <div className="flex items-center border border-gray-300 bg-white rounded">
+              <button className="p-2 hover:bg-gray-200" title="Text Highlight Color">
+                <Palette className="w-4 h-4 text-yellow-400" />
+              </button>
+              <ChevronDown className="w-3 h-3 text-black" />
+            </div>
+            <div className="flex items-center border border-gray-300 bg-white rounded">
+              <input
+                type="color"
+                className="w-6 h-6 border-0 cursor-pointer bg-transparent"
+                value={(editor?.getAttributes('textStyle')?.color as string) || '#000000'}
+                onChange={(e) => run()?.setColor(e.target.value).run()}
+                title="Font Color"
+              />
+              <ChevronDown className="w-3 h-3 text-black" />
+            </div>
           </div>
-          <div className="flex items-center border border-gray-300 bg-white rounded">
-            <button className="p-2 hover:bg-gray-200" title="Text Highlight Color">
-              <Palette className="w-4 h-4 text-yellow-400" />
-            </button>
-            <ChevronDown className="w-3 h-3 text-black" />
-          </div>
-          <div className="flex items-center border border-gray-300 bg-white rounded">
-            <input
-              type="color"
-              className="w-6 h-6 border-0 cursor-pointer bg-transparent"
-              value={(editor?.getAttributes('textStyle')?.color as string) || '#000000'}
-              onChange={(e) => run()?.setColor(e.target.value).run()}
-              title="Font Color"
-            />
-            <ChevronDown className="w-3 h-3 text-black" />
-          </div>
-        </div>
-        
-        <div className="w-px h-8 bg-gray-300 mx-2" />
-        
-        {/* Paragraph Group */}
-        <div className="flex items-center space-x-1 pr-4">
-          <div className="flex items-center border border-gray-300 bg-white rounded">
-            <button 
-              className={`p-2 hover:bg-gray-200 ${isActive('bulletList') ? 'bg-blue-100' : ''}`}
-              onClick={() => run()?.toggleBulletList().run()}
-              title="Bullets"
+
+          <div className="w-px h-8 bg-gray-300 mx-2" />
+
+          {/* Paragraph Group */}
+          <div className="flex items-center space-x-1 pr-4">
+            <div className="flex items-center border border-gray-300 bg-white rounded">
+              <button
+                className={`p-2 hover:bg-gray-200 ${isActive('bulletList') ? 'bg-blue-100' : ''}`}
+                onClick={() => run()?.toggleBulletList().run()}
+                title="Bullets"
+              >
+                <List className="w-4 h-4 text-black" />
+              </button>
+              <ChevronDown className="w-3 h-3 text-black" />
+            </div>
+            <div className="flex items-center border border-gray-300 bg-white rounded">
+              <button
+                className={`p-2 hover:bg-gray-200 ${isActive('orderedList') ? 'bg-blue-100' : ''}`}
+                onClick={() => run()?.toggleOrderedList().run()}
+                title="Numbering"
+              >
+                <ListOrdered className="w-4 h-4 text-black" />
+              </button>
+              <ChevronDown className="w-3 h-3 text-black" />
+            </div>
+            <button
+              className="p-2 hover:bg-gray-200 border border-gray-300 bg-white rounded"
+              onClick={() => editor?.chain().focus().liftListItem('listItem').run()}
+              title="Decrease Indent"
             >
-              <List className="w-4 h-4 text-black" />
+              <IndentDecrease className="w-4 h-4 text-black" />
             </button>
-            <ChevronDown className="w-3 h-3 text-black" />
-          </div>
-          <div className="flex items-center border border-gray-300 bg-white rounded">
-            <button 
-              className={`p-2 hover:bg-gray-200 ${isActive('orderedList') ? 'bg-blue-100' : ''}`}
-              onClick={() => run()?.toggleOrderedList().run()}
-              title="Numbering"
+            <button
+              className="p-2 hover:bg-gray-200 border border-gray-300 bg-white rounded"
+              onClick={() => editor?.chain().focus().sinkListItem('listItem').run()}
+              title="Increase Indent"
             >
-              <ListOrdered className="w-4 h-4 text-black" />
+              <IndentIncrease className="w-4 h-4 text-black" />
             </button>
-            <ChevronDown className="w-3 h-3 text-black" />
           </div>
-          <button 
-            className="p-2 hover:bg-gray-200 border border-gray-300 bg-white rounded"
-            onClick={() => editor?.chain().focus().liftListItem('listItem').run()}
-            title="Decrease Indent"
-          >
-            <IndentDecrease className="w-4 h-4 text-black" />
-          </button>
-          <button 
-            className="p-2 hover:bg-gray-200 border border-gray-300 bg-white rounded"
-            onClick={() => editor?.chain().focus().sinkListItem('listItem').run()}
-            title="Increase Indent"
-          >
-            <IndentIncrease className="w-4 h-4 text-black" />
-          </button>
-        </div>
-        
-        <div className="flex items-center space-x-1 pr-4">
-          <button 
-            className={`p-2 rounded hover:bg-gray-200 ${
-              isActive('paragraph', { textAlign: 'left' }) || 
-              (!isActive('paragraph', { textAlign: 'center' }) && 
-               !isActive('paragraph', { textAlign: 'right' }) && 
-               !isActive('paragraph', { textAlign: 'justify' })) 
-                ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'
-            }`}
-            onClick={() => run()?.setTextAlign('left').run()}
-            title="Align Left"
-          >
-            <AlignLeft className="w-4 h-4 text-black" />
-          </button>
-          <button 
-            className={`p-2 rounded hover:bg-gray-200 ${
-              isActive('paragraph', { textAlign: 'center' }) ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'
-            }`}
-            onClick={() => run()?.setTextAlign('center').run()}
-            title="Center"
-          >
-            <AlignCenter className="w-4 h-4 text-black" />
-          </button>
-          <button 
-            className={`p-2 rounded hover:bg-gray-200 ${
-              isActive('paragraph', { textAlign: 'right' }) ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'
-            }`}
-            onClick={() => run()?.setTextAlign('right').run()}
-            title="Align Right"
-          >
-            <AlignRight className="w-4 h-4 text-black" />
-          </button>
-          <button 
-            className={`p-2 rounded hover:bg-gray-200 ${
-              isActive('paragraph', { textAlign: 'justify' }) ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'
-            }`}
-            onClick={() => run()?.setTextAlign('justify').run()}
-            title="Justify"
-          >
-            <AlignJustify className="w-4 h-4 text-black" />
-          </button>
-          <div className="flex items-center border border-gray-300 bg-white rounded">
-            <button className="p-2 hover:bg-gray-200" title="Line Spacing">
-              <div className="w-4 h-4 flex flex-col justify-center items-center">
-                <div className="w-3 h-px bg-black mb-1"></div>
-                <div className="w-3 h-px bg-black mb-1"></div>
-                <div className="w-3 h-px bg-black"></div>
-              </div>
+
+          <div className="flex items-center space-x-1 pr-4">
+            <button
+              className={`p-2 rounded hover:bg-gray-200 ${isActive('paragraph', { textAlign: 'left' }) ||
+                  (!isActive('paragraph', { textAlign: 'center' }) &&
+                    !isActive('paragraph', { textAlign: 'right' }) &&
+                    !isActive('paragraph', { textAlign: 'justify' }))
+                  ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'
+                }`}
+              onClick={() => run()?.setTextAlign('left').run()}
+              title="Align Left"
+            >
+              <AlignLeft className="w-4 h-4 text-black" />
             </button>
-            <ChevronDown className="w-3 h-3 text-black" />
+            <button
+              className={`p-2 rounded hover:bg-gray-200 ${isActive('paragraph', { textAlign: 'center' }) ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'
+                }`}
+              onClick={() => run()?.setTextAlign('center').run()}
+              title="Center"
+            >
+              <AlignCenter className="w-4 h-4 text-black" />
+            </button>
+            <button
+              className={`p-2 rounded hover:bg-gray-200 ${isActive('paragraph', { textAlign: 'right' }) ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'
+                }`}
+              onClick={() => run()?.setTextAlign('right').run()}
+              title="Align Right"
+            >
+              <AlignRight className="w-4 h-4 text-black" />
+            </button>
+            <button
+              className={`p-2 rounded hover:bg-gray-200 ${isActive('paragraph', { textAlign: 'justify' }) ? 'bg-blue-100 border border-blue-400' : 'border border-gray-300 bg-white'
+                }`}
+              onClick={() => run()?.setTextAlign('justify').run()}
+              title="Justify"
+            >
+              <AlignJustify className="w-4 h-4 text-black" />
+            </button>
+            <div className="flex items-center border border-gray-300 bg-white rounded">
+              <button className="p-2 hover:bg-gray-200" title="Line Spacing">
+                <div className="w-4 h-4 flex flex-col justify-center items-center">
+                  <div className="w-3 h-px bg-black mb-1"></div>
+                  <div className="w-3 h-px bg-black mb-1"></div>
+                  <div className="w-3 h-px bg-black"></div>
+                </div>
+              </button>
+              <ChevronDown className="w-3 h-3 text-black" />
+            </div>
           </div>
-        </div>
-        
-        <div className="w-px h-8 bg-gray-300 mx-2" />
-        
-        {/* Styles Group */}
-        <div className="flex items-center space-x-1">
-          <button
-            className={`px-3 py-2 text-sm border border-gray-300 bg-white rounded hover:bg-gray-100 ${
-              !isActive('heading', { level: 1 }) && 
-              !isActive('heading', { level: 2 }) && 
-              !isActive('heading', { level: 3 }) 
-                ? 'bg-blue-100 border-blue-400' : ''
-            }`}
-            onClick={() => run()?.setParagraph().run()}
-          >
-            <span className="text-black">Normal</span>
-          </button>
-          <button 
-            className="px-3 py-2 text-sm border border-gray-300 bg-white rounded hover:bg-gray-100"
-            title="No Spacing"
-          >
-            <span className="text-black">No Spacing</span>
-          </button>
-          <button 
-            className={`px-3 py-2 text-lg font-bold border border-gray-300 bg-white rounded hover:bg-gray-100 ${
-              isActive('heading', { level: 1 }) ? 'bg-blue-100 border-blue-400' : ''
-            }`}
-            onClick={() => run()?.toggleHeading({ level: 1 }).run()}
-            title="Heading 1"
-          >
-            <span className="text-blue-600">Heading 1</span>
-          </button>
-        </div>
+
+          <div className="w-px h-8 bg-gray-300 mx-2" />
+
+          {/* Styles Group */}
+          <div className="flex items-center space-x-1">
+            <button
+              className={`px-3 py-2 text-sm border border-gray-300 bg-white rounded hover:bg-gray-100 ${!isActive('heading', { level: 1 }) &&
+                  !isActive('heading', { level: 2 }) &&
+                  !isActive('heading', { level: 3 })
+                  ? 'bg-blue-100 border-blue-400' : ''
+                }`}
+              onClick={() => run()?.setParagraph().run()}
+            >
+              <span className="text-black">Normal</span>
+            </button>
+            <button
+              className="px-3 py-2 text-sm border border-gray-300 bg-white rounded hover:bg-gray-100"
+              title="No Spacing"
+            >
+              <span className="text-black">No Spacing</span>
+            </button>
+            <button
+              className={`px-3 py-2 text-lg font-bold border border-gray-300 bg-white rounded hover:bg-gray-100 ${isActive('heading', { level: 1 }) ? 'bg-blue-100 border-blue-400' : ''
+                }`}
+              onClick={() => run()?.toggleHeading({ level: 1 }).run()}
+              title="Heading 1"
+            >
+              <span className="text-blue-600">Heading 1</span>
+            </button>
+          </div>
         </div>
         {/* Group Labels */}
         <div className="flex items-center py-1 px-4 text-xs text-gray-600">
@@ -395,7 +389,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor, onUpload, onSaveReturn
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             <span className="text-sm text-gray-600">Tables</span>
-            <button 
+            <button
               className="p-2 hover:bg-gray-200 rounded border border-gray-300 bg-white"
               onClick={insertTable}
               title="Insert Table"
@@ -405,12 +399,28 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor, onUpload, onSaveReturn
           </div>
           <div className="flex items-center space-x-2">
             <span className="text-sm text-gray-600">Illustrations</span>
-            <button 
+            <button
               className="p-2 hover:bg-gray-200 rounded border border-gray-300 bg-white"
               onClick={() => imageInputRef.current?.click()}
               title="Insert Image"
             >
               <ImageIcon className="w-5 h-5 text-gray-700" />
+            </button>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-600">Media</span>
+            <button
+              className="p-2 hover:bg-gray-200 rounded border border-gray-300 bg-white"
+              title="Embed by URL (YouTube, Tweet, Gist)"
+              onClick={async () => {
+                const url = window.prompt('Enter media URL (YouTube, Tweet, Gist, etc.)');
+                if (!url) return;
+                try {
+                  editor?.chain().focus().insertContent({ type: 'embed', attrs: { url } }).run();
+                } catch { }
+              }}
+            >
+              <LinkIcon className="w-5 h-5 text-gray-700" />
             </button>
           </div>
         </div>
@@ -444,14 +454,39 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor, onUpload, onSaveReturn
     ),
     Review: (
       <div className="w-full flex items-center py-2 px-4 bg-gray-50">
-        <div className="flex items-center space-x-4">
-          <span className="text-sm text-gray-600">Proofing</span>
-          <button className="px-3 py-2 border border-gray-300 rounded text-sm hover:bg-gray-200 bg-white text-black">
-            Spelling & Grammar
-          </button>
-          <button className="px-3 py-2 border border-gray-300 rounded text-sm hover:bg-gray-200 bg-white text-black">
-            Thesaurus
-          </button>
+        <div className="flex items-center space-x-8">
+          <div className="flex items-center space-x-4">
+            <span className="text-sm text-gray-600">Proofing</span>
+            <button className="px-3 py-2 border border-gray-300 rounded text-sm hover:bg-gray-200 bg-white text-black">
+              Spelling & Grammar
+            </button>
+            <button className="px-3 py-2 border border-gray-300 rounded text-sm hover:bg-gray-200 bg-white text-black">
+              Thesaurus
+            </button>
+          </div>
+          <div className="flex items-center space-x-4">
+            <span className="text-sm text-gray-600">Comments</span>
+            <button
+              className="px-3 py-1.5 border border-gray-300 rounded text-sm bg-white hover:bg-gray-100 text-black"
+              onClick={() => {
+                const text = prompt('Add a comment');
+                if (text) {
+                  const id = `c_${Math.random().toString(36).slice(2, 10)}`;
+                  editor?.chain().focus().setMark('commentMark', { id, text, resolved: false }).run();
+                }
+              }}
+            >
+              Add
+            </button>
+            <button
+              className="px-3 py-1.5 border border-gray-300 rounded text-sm bg-white hover:bg-gray-100 text-black"
+              onClick={() => {
+                editor?.chain().focus().updateAttributes('commentMark', { resolved: true }).run();
+              }}
+            >
+              Resolve
+            </button>
+          </div>
         </div>
       </div>
     ),
@@ -478,11 +513,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editor, onUpload, onSaveReturn
           {TABS.map(tab => (
             <button
               key={tab}
-              className={`px-3 py-2 text-sm font-medium ${
-                activeTab === tab 
-                  ? 'bg-white text-black border-t-2 border-blue-500' 
+              className={`px-3 py-2 text-sm font-medium ${activeTab === tab
+                  ? 'bg-white text-black border-t-2 border-blue-500'
                   : 'text-gray-600 hover:bg-gray-200'
-              }`}
+                }`}
               onClick={() => setActiveTab(tab)}
             >
               {tab}

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import BlogHeader from './components/BlogHeader';
 import BlogCard from './components/BlogCard';
 import Filters from './components/Filters';
 import { useBlogsData } from './hook/useBlogsData';
@@ -12,46 +13,7 @@ const BlogHomepage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white text-black">
-      {/* Navigation */}
-      <nav className="border-b border-gray-100 sticky top-0 bg-white/95 backdrop-blur-sm z-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">B</span>
-              </div>
-              <span className="text-xl font-serif font-bold text-gray-900">BlogSpace</span>
-            </Link>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              <Link href="/" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
-                Home
-              </Link>
-              <Link href="/blog" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
-                Categories
-              </Link>
-              <Link href="/blog/search" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
-                Search
-              </Link>
-              <Link href="/blog/poster/new" className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
-                Write
-              </Link>
-              <Link href="/profile">
-                <div className="w-8 h-8 bg-gray-300 rounded-full cursor-pointer hover:ring-2 hover:ring-gray-200 transition-all"></div>
-              </Link>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button className="md:hidden p-2">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-          </div>
-        </div>  
-      </nav>
+      <BlogHeader />
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">

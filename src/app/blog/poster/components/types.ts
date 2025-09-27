@@ -1,6 +1,6 @@
 import { Editor } from '@tiptap/react';
 
-export type ViewMode = 'side-by-side' | 'preview-only' | 'editor-only' | 'popup';
+export type ViewMode = 'side-by-side' | 'preview-only' | 'editor-only' | 'popup' | 'slides';
 
 export interface ToolbarProps {
   editor: Editor | null;
@@ -33,6 +33,8 @@ export interface ViewControlsProps {
   onToggleApprovalRequired?: () => void;
   allowlistText?: string;
   onAllowlistTextChange?: (text: string) => void;
+  isTeamBlog?: boolean;
+  teamName?: string | null;
 }
 
 export interface EditorWrapperProps {

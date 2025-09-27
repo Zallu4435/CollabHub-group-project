@@ -10,20 +10,37 @@ interface Message {
   timestamp: Date;
 }
 
+// Format time in a consistent way to avoid hydration mismatches
+const formatTime = (date: Date): string => {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  const displayMinutes = minutes.toString().padStart(2, '0');
+  return `${displayHours}:${displayMinutes} ${ampm}`;
+};
+
 const FloatingChatBot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: 'Ahoy! 🚢 I\'m your AI assistant. How can I help you navigate today?',
-      sender: 'bot',
-      timestamp: new Date()
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Initialize with welcome message only on client side to avoid hydration mismatch
+  useEffect(() => {
+    if (messages.length === 0) {
+      setMessages([
+        {
+          id: '1',
+          text: 'Ahoy! 🚢 I\'m your AI assistant. How can I help you navigate today?',
+          sender: 'bot',
+          timestamp: new Date()
+        }
+      ]);
+    }
+  }, [messages.length]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -160,7 +177,7 @@ const FloatingChatBot: React.FC = () => {
                   "text-xs mt-1",
                   message.sender === 'user' ? "text-blue-100" : "text-gray-400"
                 )}>
-                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {formatTime(message.timestamp)}
                 </p>
               </div>
             </div>

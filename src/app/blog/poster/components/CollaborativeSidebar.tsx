@@ -43,7 +43,7 @@ export const CollaborativeSidebar: React.FC<CollaborativeSidebarProps> = ({
       const shallowSame = prev.length === next.length && prev.every((u, i) => u.name === next[i].name && u.color === next[i].color && !!u.isVoiceConnected === !!next[i].isVoiceConnected);
       if (!shallowSame) setCollaborativeUsers(next);
     }
-  }, [externalSerialized, collaborativeUsersExternal, collaborativeUsers]);
+  }, [externalSerialized, collaborativeUsersExternal]);
 
   // Combine users from both collaborative editing and voice chat
   const allUsers = React.useMemo(() => {
@@ -79,7 +79,7 @@ export const CollaborativeSidebar: React.FC<CollaborativeSidebarProps> = ({
     } catch {
       // If serialization fails, avoid spamming parent
     }
-  }, [allUsers, onUsersChange]);
+  }, [allUsers]);
 
   const handleCollaborativeUsersChange = React.useCallback((users: User[]) => {
     setCollaborativeUsers(users);

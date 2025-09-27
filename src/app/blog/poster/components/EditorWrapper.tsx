@@ -162,12 +162,19 @@ export const EditorWrapper: React.FC<EditorWrapperProps> = ({ onHtmlChange, onEd
     onCreate({ editor }) {
       // Focus the editor immediately for Google Docs-like behavior
       setTimeout(() => {
-        editor.commands.focus();
-        // Ensure cursor is visible and blinking
-        const editorElement = editor.view.dom;
-        if (editorElement) {
-          editorElement.focus();
-          editorElement.click();
+        try {
+          // Check if editor is mounted and view is available
+          if (editor && editor.view && editor.view.dom) {
+            editor.commands.focus();
+            // Ensure cursor is visible and blinking
+            const editorElement = editor.view.dom;
+            if (editorElement) {
+              editorElement.focus();
+              editorElement.click();
+            }
+          }
+        } catch (error) {
+          console.warn('Editor focus failed:', error);
         }
       }, 200);
     }

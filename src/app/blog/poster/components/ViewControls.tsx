@@ -11,6 +11,7 @@ const VIEW_MODES = [
   { id: 'editor-only', title: 'Editor Only', Icon: FileText },
   { id: 'side-by-side', title: 'Side-by-Side View', Icon: PanelRightOpen },
   { id: 'preview-only', title: 'Preview Only', Icon: Eye },
+  { id: 'slides', title: 'Presentation Mode', Icon: Maximize2 },
 ];
 
 export const ViewControls: React.FC<ViewControlsProps> = ({ 
@@ -35,7 +36,9 @@ export const ViewControls: React.FC<ViewControlsProps> = ({
   approvalRequired = false,
   onToggleApprovalRequired,
   allowlistText = '',
-  onAllowlistTextChange
+  onAllowlistTextChange,
+  isTeamBlog = false,
+  teamName = null
 }) => {
   const [showSettings, setShowSettings] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -105,8 +108,16 @@ export const ViewControls: React.FC<ViewControlsProps> = ({
           </button>
         )}
 
-        {/* Collaborative Mode Button */}
-        {onToggleCollaborativeMode && (
+        {/* Team Context Indicator */}
+        {isTeamBlog && teamName && (
+          <div className="flex items-center space-x-2 px-3 py-1.5 rounded-md text-sm font-medium bg-green-50 text-green-700 border border-green-200">
+            <span className="text-xs">👥</span>
+            <span>{teamName}</span>
+          </div>
+        )}
+
+        {/* Collaborative Mode Button - Only show for team blogs */}
+        {onToggleCollaborativeMode && isTeamBlog && (
           <button
             onClick={onToggleCollaborativeMode}
             className={`flex items-center space-x-1 px-3 py-1.5 rounded-md text-sm font-medium transition-colors border border-gray-300 ${
@@ -121,8 +132,8 @@ export const ViewControls: React.FC<ViewControlsProps> = ({
           </button>
         )}
 
-        {/* Settings Button for Collaborative Mode */}
-        {isCollaborativeMode && (
+        {/* Settings Button for Collaborative Mode - Only show for team blogs */}
+        {isCollaborativeMode && isTeamBlog && (
           <div className="relative settings-dropdown">
             <button
               onClick={() => setShowSettings(!showSettings)}

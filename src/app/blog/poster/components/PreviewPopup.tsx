@@ -1,13 +1,28 @@
 "use client";
 
 import React from 'react';
-import { Minimize2, Printer } from 'lucide-react';
+import { Minimize2, Printer, ZoomIn, ZoomOut, X, FileText } from 'lucide-react';
 
 const PreviewPopup: React.FC<{ 
   html: string; 
   isOpen: boolean; 
   onClose: () => void; 
 }> = ({ html, isOpen, onClose }) => {
+  const [zoom, setZoom] = React.useState(1);
+  const [pageWidth, setPageWidth] = React.useState<'A4' | 'Letter'>('Letter');
+
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if ((e.ctrlKey || e.metaKey) && e.key === '+') { e.preventDefault(); setZoom(z => Math.min(2, +(z + 0.1).toFixed(2))); }
+      if ((e.ctrlKey || e.metaKey) && e.key === '-') { e.preventDefault(); setZoom(z => Math.max(0.5, +(z - 0.1).toFixed(2))); }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') { e.preventDefault(); handlePrint(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handlePrint = () => {
@@ -25,40 +40,78 @@ const PreviewPopup: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
-      {/* Main modal container with a neutral background */}
-      <div className="bg-gray-100 rounded-lg shadow-2xl max-w-6xl max-h-[95vh] w-full flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-3 border-b border-gray-300 bg-white rounded-t-lg">
-          <h3 className="text-base font-semibold text-gray-800">Document Preview</h3>
-          <div className="flex items-center space-x-2">
-            <button 
-              title="Print"
-              onClick={handlePrint}
-              className="p-2 text-gray-700 hover:bg-gray-200 rounded-md transition-colors"
-            >
-              <Printer className="w-5 h-5" />
-            </button>
-            <button
-              title="Close Preview"
-              className="p-2 text-gray-700 hover:bg-gray-200 rounded-md transition-colors"
-              onClick={onClose}
-            >
-              <Minimize2 className="w-5 h-5" />
-            </button>
+    <div className="fixed inset-0 z-50">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      {/* Centered Modal */}
+      <div className="absolute inset-0 p-4 sm:p-6 flex items-center justify-center">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[95vh] flex flex-col border border-gray-200">
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200">
+            <div className="flex items-center gap-2 text-gray-800">
+              <FileText className="w-4 h-4" />
+              <h3 className="text-sm font-semibold">Document Preview</h3>
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                title="Zoom out"
+                onClick={() => setZoom(z => Math.max(0.5, +(z - 0.1).toFixed(2)))}
+                className="px-2 py-1 text-gray-700 hover:bg-gray-100 rounded-md"
+              >
+                <ZoomOut className="w-4 h-4" />
+              </button>
+              <span className="px-2 text-xs tabular-nums text-gray-700">{Math.round(zoom * 100)}%</span>
+              <button
+                title="Zoom in"
+                onClick={() => setZoom(z => Math.min(2, +(z + 0.1).toFixed(2)))}
+                className="px-2 py-1 text-gray-700 hover:bg-gray-100 rounded-md"
+              >
+                <ZoomIn className="w-4 h-4" />
+              </button>
+              <div className="w-px h-5 bg-gray-200 mx-2" />
+              <select
+                aria-label="Page size"
+                value={pageWidth}
+                onChange={(e) => setPageWidth(e.target.value as 'A4' | 'Letter')}
+                className="text-xs border border-gray-300 rounded-md px-2 py-1 text-gray-700 bg-white hover:bg-gray-50"
+              >
+                <option value="Letter">Letter (8.5×11in)</option>
+                <option value="A4">A4 (210×297mm)</option>
+              </select>
+              <div className="w-px h-5 bg-gray-200 mx-2" />
+              <button 
+                title="Print"
+                onClick={handlePrint}
+                className="px-2 py-1 text-gray-700 hover:bg-gray-100 rounded-md"
+              >
+                <Printer className="w-4 h-4" />
+              </button>
+              <button
+                title="Close"
+                onClick={onClose}
+                className="ml-1 px-2 py-1 text-gray-700 hover:bg-gray-100 rounded-md"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-        </div>
-        
-        {/* Scrolling area for the document page */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8">
-          {/* The simulated "Page" */}
-          <div 
-            className="prose prose-base sm:prose-lg max-w-3xl min-h-[80vh] mx-auto p-10 bg-white text-black shadow-md rounded-md border border-gray-200"
-            style={{ color: '#111' }}
-          >
-            <div 
-              dangerouslySetInnerHTML={{ __html: html }} 
-            />
+          {/* Content */}
+          <div className="flex-1 overflow-auto bg-gray-50">
+            <div className="py-6 px-4 flex justify-center">
+              <div
+                className="bg-white shadow-md border border-gray-200 rounded-md"
+                style={{
+                  width: pageWidth === 'Letter' ? '8.5in' : '210mm',
+                  minHeight: pageWidth === 'Letter' ? '11in' : '297mm',
+                  transform: `scale(${zoom})`,
+                  transformOrigin: 'top center'
+                }}
+              >
+                <div className="p-10 prose prose-sm sm:prose lg:prose-lg max-w-none text-black">
+                  <div dangerouslySetInnerHTML={{ __html: html }} />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { EditorContent, useEditor, Editor } from '@tiptap/react';
-import { Extension } from '@tiptap/core';
+import { Extension, Mark } from '@tiptap/core';
 
 // Tiptap Extensions
 import StarterKit from '@tiptap/starter-kit';
@@ -27,6 +27,86 @@ import Placeholder from '@tiptap/extension-placeholder';
 import CharacterCount from '@tiptap/extension-character-count';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { createLowlight } from 'lowlight';
+import { Node, mergeAttributes } from '@tiptap/core';
+
+// --- Simple helpers for media embeds ---
+const detectProvider = (url: string): 'youtube' | 'twitter' | 'gist' | 'generic' => {
+  try {
+    const u = new URL(url);
+    if (/(youtube\.com|youtu\.be)/i.test(u.hostname)) return 'youtube';
+    if (/twitter\.com/i.test(u.hostname)) return 'twitter';
+    if (/gist\.github\.com/i.test(u.hostname)) return 'gist';
+    return 'generic';
+  } catch {
+    return 'generic';
+  }
+};
+
+const getYouTubeEmbedSrc = (url: string): string | null => {
+  try {
+    const u = new URL(url);
+    if (u.hostname === 'youtu.be') {
+      const id = u.pathname.slice(1);
+      return `https://www.youtube.com/embed/${id}`;
+    }
+    if (u.hostname.includes('youtube.com')) {
+      const id = u.searchParams.get('v');
+      if (id) return `https://www.youtube.com/embed/${id}`;
+      // /embed/ already
+      if (u.pathname.startsWith('/embed/')) return u.toString();
+    }
+  } catch {}
+  return null;
+};
+
+// Create DOM node for an embed, used by NodeView for better WYSIWYG in-client
+function resolveEmbed(url: string, provider?: string) {
+  const container = document.createElement('div');
+  container.className = 'w-full';
+  const resolvedProvider = (provider as any) || detectProvider(url);
+  if (resolvedProvider === 'youtube') {
+    const src = getYouTubeEmbedSrc(url);
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('data-embed', 'true');
+    iframe.src = src || url;
+    iframe.className = 'w-full';
+    iframe.style.aspectRatio = '16 / 9';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    iframe.setAttribute('allowfullscreen', 'true');
+    container.appendChild(iframe);
+    return container;
+  }
+  if (resolvedProvider === 'twitter') {
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('data-embed', 'true');
+    iframe.src = `https://twitframe.com/show?url=${encodeURIComponent(url)}`;
+    iframe.className = 'w-full';
+    iframe.style.minHeight = '200px';
+    container.appendChild(iframe);
+    return container;
+  }
+  if (resolvedProvider === 'gist') {
+    try {
+      const u = new URL(url);
+      const pibb = `${u.origin}${u.pathname}.pibb`;
+      const iframe = document.createElement('iframe');
+      iframe.setAttribute('data-embed', 'true');
+      iframe.src = pibb;
+      iframe.className = 'w-full';
+      iframe.style.minHeight = '300px';
+      container.appendChild(iframe);
+      return container;
+    } catch {}
+  }
+  const a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  a.textContent = url;
+  a.setAttribute('data-embed', 'true');
+  container.appendChild(a);
+  return container;
+}
 
 interface CollaborativeEditorProps {
   onHtmlChange: (html: string) => void;
@@ -124,11 +204,109 @@ export const CollaborativeEditor: React.FC<CollaborativeEditorProps> = ({
       CodeBlockLowlight.configure({
         lowlight: createLowlight(),
       }),
+      // Comment mark
+      Mark.create({
+        name: 'commentMark',
+        inclusive: false,
+        exitable: true,
+        addAttributes() {
+          return {
+            id: { default: null },
+            text: { default: null },
+            resolved: { default: false },
+          };
+        },
+        parseHTML() {
+          return [
+            { tag: 'span[data-comment]' },
+          ];
+        },
+        renderHTML({ HTMLAttributes }: { HTMLAttributes: Record<string, any> }) {
+          const attrs = mergeAttributes(HTMLAttributes, {
+            'data-comment': 'true',
+            'data-id': HTMLAttributes.id,
+            'data-resolved': String(HTMLAttributes.resolved ?? false),
+            class: `comment-mark ${HTMLAttributes.resolved ? 'opacity-50 line-through' : 'bg-yellow-100'}`,
+          });
+          return ['span', attrs, 0];
+        },
+      }),
+      // Lightweight embed node for common providers by URL
+      Node.create({
+        name: 'embed',
+        group: 'block',
+        atom: true,
+        selectable: true,
+        draggable: true,
+        addAttributes() {
+          return {
+            url: {
+              default: null,
+            },
+            provider: {
+              default: null,
+            },
+          };
+        },
+        parseHTML() {
+          return [
+            { tag: 'div[data-embed]' },
+            { tag: 'iframe[data-embed]' },
+            { tag: 'a[data-embed]' },
+          ];
+        },
+        renderHTML({ HTMLAttributes }) {
+          const url = (HTMLAttributes as any).url as string | null;
+          const explicitProvider = (HTMLAttributes as any).provider as string | null;
+          const provider = url ? (explicitProvider || detectProvider(url)) : null;
+          if (!url || !provider) {
+            return ['a', mergeAttributes(HTMLAttributes, { 'data-embed': 'true', href: '#', rel: 'noopener noreferrer' }), 'invalid embed'];
+          }
+          if (provider === 'youtube') {
+            const src = getYouTubeEmbedSrc(url);
+            if (src) {
+              return ['iframe', mergeAttributes(HTMLAttributes, { 'data-embed': 'true', src, class: 'w-full aspect-video', frameborder: '0', allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share', allowfullscreen: 'true' })];
+            }
+          }
+          if (provider === 'twitter') {
+            const src = `https://twitframe.com/show?url=${encodeURIComponent(url)}`;
+            return ['iframe', mergeAttributes(HTMLAttributes, { 'data-embed': 'true', src, class: 'w-full', style: 'min-height: 200px' })];
+          }
+          if (provider === 'gist') {
+            // Attempt to transform to .pibb embeddable page when possible
+            try {
+              const u = new URL(url);
+              if (/gist\.github\.com/i.test(u.hostname)) {
+                const pibb = `${u.origin}${u.pathname}.pibb`;
+                return ['iframe', mergeAttributes(HTMLAttributes, { 'data-embed': 'true', src: pibb, class: 'w-full', style: 'min-height: 300px' })];
+              }
+            } catch {}
+          }
+          return ['a', mergeAttributes(HTMLAttributes, { 'data-embed': 'true', href: url, rel: 'noopener noreferrer', target: '_blank' }), url];
+        },
+        addNodeView() {
+          return ({ node }) => {
+            const dom = document.createElement('div');
+            dom.setAttribute('data-embed', 'true');
+            dom.className = 'my-3';
+            const url: string = node.attrs.url;
+            const provider: string | null = node.attrs.provider || detectProvider(url);
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'rounded-lg overflow-hidden border border-gray-200 bg-white';
+
+            const resolved = resolveEmbed(url, provider || undefined);
+            wrapper.appendChild(resolved);
+            dom.appendChild(wrapper);
+            return { dom };
+          };
+        },
+      })
     ],
     content: '<p></p>',
     editorProps: {
       attributes: {
-        className: 'min-h-[10in] w-full outline-none focus:outline-none prose prose-lg max-w-none'
+        className: 'min-h-[10in] w-full outline-none focus:outline-none prose prose-lg max-w-none text-black'
       },
     },
     onCreate({ editor }) {
@@ -137,11 +315,18 @@ export const CollaborativeEditor: React.FC<CollaborativeEditorProps> = ({
       
       // Focus the editor immediately
       setTimeout(() => {
-        editor.commands.focus();
-        const editorElement = editor.view.dom;
-        if (editorElement) {
-          editorElement.focus();
-          editorElement.click();
+        try {
+          // Check if editor is mounted and view is available
+          if (editor && editor.view && editor.view.dom) {
+            editor.commands.focus();
+            const editorElement = editor.view.dom;
+            if (editorElement) {
+              editorElement.focus();
+              editorElement.click();
+            }
+          }
+        } catch (error) {
+          console.warn('Collaborative editor focus failed:', error);
         }
       }, 200);
     },
@@ -151,7 +336,7 @@ export const CollaborativeEditor: React.FC<CollaborativeEditorProps> = ({
   useEffect(() => {
     // Expose only name/color outward
     onUsersChange?.(connectedUsers.map(u => ({ name: u.name, color: u.color })));
-  }, [connectedUsers, onUsersChange]);
+  }, [connectedUsers]);
 
   const initializeCollaboration = (editor: Editor) => {
     try {

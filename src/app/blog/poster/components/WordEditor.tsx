@@ -7,6 +7,7 @@ import { marked } from 'marked';
 import { Toolbar } from './Toolbar';
 import { ViewControls } from './ViewControls';
 import PreviewPopup from './PreviewPopup';
+import SlidesModal from './SlidesModal';
 import { EditorWrapper } from './EditorWrapper';
 import { CollaborativeEditor } from './CollaborativeEditor';
 import { CollaborativeSidebar } from './CollaborativeSidebar';
@@ -21,7 +22,7 @@ export const WordEditor: React.FC = () => {
   const [editor, setEditor] = useState<Editor | null>(null);
   const [markdownContent, setMarkdownContent] = useState<string>('');
   const [isMarkdownEditor, setIsMarkdownEditor] = useState(false);
-  const [isCollaborativeMode, setIsCollaborativeMode] = useState(true);
+  const [isCollaborativeMode, setIsCollaborativeMode] = useState(false);
   const [userName, setUserName] = useState<string>('Anonymous');
   const [roomId, setRoomId] = useState<string>('collaborative-editing');
   const [roomKey, setRoomKey] = useState<string>('');
@@ -31,8 +32,130 @@ export const WordEditor: React.FC = () => {
   const [connectedUsers, setConnectedUsers] = useState<Array<{ name: string; color: string }>>([]);
   const [draftId, setDraftId] = useState<string | null>(null);
   const [returnTo, setReturnTo] = useState<string | null>(null);
+  
+  // Team context state
+  const [isTeamBlog, setIsTeamBlog] = useState<boolean>(false);
+  const [teamId, setTeamId] = useState<string | null>(null);
+  const [teamName, setTeamName] = useState<string | null>(null);
+  // Hoisted: slides state when in slides mode
+  const [slideIndex, setSlideIndex] = React.useState(0);
+  const [isSlidesModalOpen, setIsSlidesModalOpen] = React.useState(false);
+  const [previousViewMode, setPreviousViewMode] = React.useState<ViewMode>('editor-only');
+
+  // Detect team context from URL parameters
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const teamIdParam = urlParams.get('teamId');
+    const teamNameParam = urlParams.get('teamName');
+    const soloParam = urlParams.get('solo');
+    
+    if (teamIdParam && teamNameParam) {
+      setIsTeamBlog(true);
+      setTeamId(teamIdParam);
+      setTeamName(teamNameParam);
+      setIsCollaborativeMode(true); // Auto-enable collaboration for team blogs
+      setRoomId(`team-${teamIdParam}`); // Use team-specific room ID
+    } else if (soloParam === 'true') {
+      setIsTeamBlog(false);
+      setIsCollaborativeMode(false); // Disable collaboration for solo blogs
+    }
+  }, []);
 
   const draftStorageKey = useMemo(() => (draftId ? `poster:draft:${draftId}` : null), [draftId]);
+  // Hoisted: slides memo derived from html, used when viewMode === 'slides'
+  const slides = React.useMemo(() => {
+    if (typeof document === 'undefined') return [];
+    const container = document.createElement('div');
+    container.innerHTML = html || '';
+
+    // Collect block-level elements that should appear on slides
+    const blocks = Array.from(
+      container.querySelectorAll(
+        'h1, h2, h3, p, ul, ol, blockquote, pre, table, img, iframe, div[data-embed]'
+      )
+    ) as HTMLElement[];
+
+    // Word-based thresholds to target ~250-300 words per slide
+    const MIN_WORDS_PER_SLIDE = 250;
+    const TARGET_WORDS_PER_SLIDE = 275;
+    const MAX_WORDS_PER_SLIDE = 300;
+
+    const slidesGroups: HTMLElement[][] = [];
+    let currentGroup: HTMLElement[] = [];
+    let currentWords = 0;
+
+    const countWords = (text: string) =>
+      (text || '')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .split(' ')
+        .filter(Boolean).length;
+
+    const getWords = (el: HTMLElement) => countWords(el.textContent || '');
+    const isHeading = (el: HTMLElement) => /H1|H2|H3/i.test(el.tagName);
+
+    for (let i = 0; i < blocks.length; i++) {
+      const el = blocks[i];
+
+      const blockWords = getWords(el);
+
+      // If this single block is very large, place it on its own slide to preserve formatting
+      if (blockWords > MAX_WORDS_PER_SLIDE) {
+        if (currentGroup.length && currentWords >= MIN_WORDS_PER_SLIDE) {
+          slidesGroups.push(currentGroup);
+          currentGroup = [];
+          currentWords = 0;
+        }
+        slidesGroups.push([el]);
+        continue;
+      }
+
+      // If we encounter a heading and current has enough content, start new slide
+      if (isHeading(el) && currentWords >= MIN_WORDS_PER_SLIDE) {
+        if (currentGroup.length) slidesGroups.push(currentGroup);
+        currentGroup = [el];
+        currentWords = blockWords;
+        continue;
+      }
+
+      // Otherwise add to current group
+      currentGroup.push(el);
+      currentWords += blockWords;
+
+      // If we've reached target or exceeded max, and the next element is a heading or absent, break here
+      const next = blocks[i + 1];
+      const nextWords = next ? getWords(next as HTMLElement) : 0;
+      const shouldBreak =
+        // hit target
+        currentWords >= TARGET_WORDS_PER_SLIDE ||
+        // next is heading and we already have enough content
+        (next && isHeading(next as HTMLElement) && currentWords >= MIN_WORDS_PER_SLIDE) ||
+        // adding next would exceed max, and we already meet minimum
+        (next && currentWords >= MIN_WORDS_PER_SLIDE && currentWords + nextWords > MAX_WORDS_PER_SLIDE) ||
+        // end of stream
+        (!next);
+
+      if (shouldBreak) {
+        slidesGroups.push(currentGroup);
+        currentGroup = [];
+        currentWords = 0;
+      }
+    }
+
+    if (currentGroup.length) slidesGroups.push(currentGroup);
+
+    if (slidesGroups.length === 0 && html) slidesGroups.push([container]);
+
+    return slidesGroups.map(group => group.map(n => n.outerHTML).join(''));
+  }, [html]);
+
+  // Open slides modal when slides mode is selected; remember previous mode
+  React.useEffect(() => {
+    if (viewMode === 'slides') {
+      setPreviousViewMode(prev => (prev === 'slides' ? 'editor-only' : viewMode));
+      setIsSlidesModalOpen(true);
+    }
+  }, [viewMode]);
 
   // Function to convert markdown to HTML
   const markdownToHtml = (markdown: string): string => {
@@ -213,6 +336,73 @@ export const WordEditor: React.FC = () => {
       );
     }
 
+    // Preview-Only View (Clean reading mode - no editing tools)
+    // Early return so collaborative mode does not force side-by-side
+    if (viewMode === 'preview-only') {
+      return (
+        <div className="flex-1 flex flex-col bg-gray-100 overflow-y-auto">
+          {/* Clean header for preview mode */}
+          <div className="bg-white border-b border-gray-300 px-4 py-3">
+            <div className="max-w-4xl mx-auto flex justify-between items-center">
+              <div className="flex items-center space-x-4">
+                <span className="text-sm text-gray-600">Preview Mode</span>
+                <span className="text-xs text-gray-500">• Read-only view</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button 
+                  className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                  onClick={() => window.print()}
+                >
+                  Print
+                </button>
+                <button 
+                  className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                  onClick={() => navigator.clipboard.writeText(html.replace(/<[^>]*>/g, ''))}
+                >
+                  Copy Text
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Document page - clean view without ruler */}
+          <div className="flex-1 flex justify-center py-8 px-4">
+            <div className="w-full max-w-4xl">
+              <div className="bg-white shadow-lg min-h-[11in] p-12 relative" style={{ 
+                width: '8.5in',
+                minHeight: '11in',
+                margin: '0 auto',
+                boxShadow: '0 0 0 1px rgba(0,0,0,0.1), 0 2px 10px rgba(0,0,0,0.1)'
+              }}>
+                <div className="min-h-[10in] w-full outline-none focus:outline-none">
+                  <div
+                    className="preview-content text-black"
+                    onMouseUp={() => {
+                      const sel = window.getSelection();
+                      const text = sel?.toString()?.trim();
+                      if (text) {
+                        const share = window.confirm('Share selected text?');
+                        if (share) {
+                          const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`"${text}"`)}&url=${encodeURIComponent(window.location.href)}`;
+                          window.open(url, '_blank', 'noopener,noreferrer');
+                        }
+                      }
+                    }}
+                    dangerouslySetInnerHTML={{ __html: html }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Slides view is handled by modal; keep main area free
+    if (viewMode === 'slides') {
+      return null;
+    }
+
     // Collaborative Editor Mode
     if (isCollaborativeMode) {
       if (viewMode === 'editor-only') {
@@ -307,53 +497,6 @@ export const WordEditor: React.FC = () => {
       );
     }
 
-    // Preview-Only View (Clean reading mode - no editing tools)
-    if (viewMode === 'preview-only') {
-      return (
-        <div className="flex-1 flex flex-col bg-gray-100 overflow-y-auto">
-          {/* Clean header for preview mode */}
-          <div className="bg-white border-b border-gray-300 px-4 py-3">
-            <div className="max-w-4xl mx-auto flex justify-between items-center">
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600">Preview Mode</span>
-                <span className="text-xs text-gray-500">• Read-only view</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <button 
-                  className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
-                  onClick={() => window.print()}
-                >
-                  Print
-                </button>
-                <button 
-                  className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
-                  onClick={() => navigator.clipboard.writeText(html.replace(/<[^>]*>/g, ''))}
-                >
-                  Copy Text
-                </button>
-              </div>
-            </div>
-          </div>
-          
-          {/* Document page - clean view without ruler */}
-          <div className="flex-1 flex justify-center py-8 px-4">
-            <div className="w-full max-w-4xl">
-              <div className="bg-white shadow-lg min-h-[11in] p-12 relative" style={{ 
-                width: '8.5in',
-                minHeight: '11in',
-                margin: '0 auto',
-                boxShadow: '0 0 0 1px rgba(0,0,0,0.1), 0 2px 10px rgba(0,0,0,0.1)'
-              }}>
-                <div className="min-h-[10in] w-full outline-none focus:outline-none">
-                  <div className="preview-content" dangerouslySetInnerHTML={{ __html: html }} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
     // Side-by-Side View (Unified styling)
     return (
       <div className="flex-1 flex bg-gray-100 overflow-hidden">
@@ -406,7 +549,36 @@ export const WordEditor: React.FC = () => {
                   boxShadow: '0 0 0 1px rgba(0,0,0,0.1), 0 2px 10px rgba(0,0,0,0.1)'
                 }}>
                   <div className="min-h-[10in] w-full outline-none focus:outline-none">
-                    <div className="preview-content" dangerouslySetInnerHTML={{ __html: html }} />
+                  <div
+                    className="preview-content text-black"
+                    onMouseUp={() => {
+                      const sel = window.getSelection();
+                      const text = sel?.toString()?.trim();
+                      if (text) {
+                        const share = window.confirm('Share selected text?');
+                        if (share) {
+                          const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`"${text}"`)}&url=${encodeURIComponent(window.location.href)}`;
+                          window.open(url, '_blank', 'noopener,noreferrer');
+                        }
+                      }
+                    }}
+                    dangerouslySetInnerHTML={{ __html: html }}
+                  />
+                    <div
+                      className="preview-content text-black"
+                      onMouseUp={() => {
+                        const sel = window.getSelection();
+                        const text = sel?.toString()?.trim();
+                        if (text) {
+                          const share = window.confirm('Share selected text?');
+                          if (share) {
+                            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`"${text}"`)}&url=${encodeURIComponent(window.location.href)}`;
+                            window.open(url, '_blank', 'noopener,noreferrer');
+                          }
+                        }
+                      }}
+                      dangerouslySetInnerHTML={{ __html: html }}
+                    />
                   </div>
                 </div>
               </div>
@@ -449,6 +621,8 @@ export const WordEditor: React.FC = () => {
         onToggleApprovalRequired={toggleApprovalRequired}
         allowlistText={allowlistText}
         onAllowlistTextChange={setAllowlistText}
+        isTeamBlog={isTeamBlog}
+        teamName={teamName}
       />
       
       <main className="flex-1 flex overflow-hidden">
@@ -462,7 +636,7 @@ export const WordEditor: React.FC = () => {
             roomId={roomId}
             userName={userName}
             onUsersChange={setConnectedUsers}
-            collaborativeUsersExternal={React.useMemo(() => connectedUsers, [connectedUsers])}
+            collaborativeUsersExternal={connectedUsers}
           />
         )}
       </main>
@@ -472,12 +646,25 @@ export const WordEditor: React.FC = () => {
         isOpen={isPreviewPopup}
         onClose={() => setIsPreviewPopup(false)}
       />
+
+      <SlidesModal 
+        slides={slides}
+        isOpen={isSlidesModalOpen}
+        onClose={() => {
+          setIsSlidesModalOpen(false);
+          // Restore previous non-slides mode so main UI returns
+          setViewMode(previousViewMode === 'slides' ? 'editor-only' : previousViewMode);
+        }}
+        slideIndex={slideIndex}
+        setSlideIndex={(index) => setSlideIndex(index)}
+      />
       
       {/* Status Bar */}
       <footer className="bg-white border-t border-gray-300 px-4 py-1.5 flex justify-between items-center text-xs text-gray-700">
         <div className="flex items-center space-x-4">
           <span>Page 1 of 1</span>
           <span>Words: {editor?.storage.characterCount.words() ?? 0}</span>
+          <span>Reading time: {Math.max(1, Math.ceil(((editor?.storage.characterCount.words() ?? 0) as number) / 200))} min</span>
           <span>Characters: {editor?.storage.characterCount.characters() ?? 0}</span>
         </div>
         <div className="flex items-center space-x-2">

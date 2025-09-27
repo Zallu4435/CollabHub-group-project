@@ -16,15 +16,31 @@ export function useBlogFilters(setFilters: (updater: (prev: BlogFilters) => Blog
     setFilters((prev) => ({ ...prev, tagSlug }));
   }, [setFilters]);
 
-  const setAuthor = useCallback((authorUsername?: string) => {
-    setFilters((prev) => ({ ...prev, authorUsername }));
+  const setReadingTime = useCallback((readingTime?: string) => {
+    setFilters((prev) => ({ ...prev, readingTime }));
+  }, [setFilters]);
+
+  const setBlogType = useCallback((blogType?: string) => {
+    setFilters((prev) => ({ ...prev, blogType }));
+  }, [setFilters]);
+
+  const setStatus = useCallback((status?: string) => {
+    setFilters((prev) => ({ ...prev, status }));
   }, [setFilters]);
 
   const setArchive = useCallback((year?: number, month?: number) => {
     setFilters((prev) => ({ ...prev, year, month }));
   }, [setFilters]);
 
-  return { setQuery, setCategory, setTag, setAuthor, setArchive } as const;
+  const setSortBy = useCallback((sortBy?: BlogFilters["sortBy"]) => {
+    setFilters((prev) => ({ ...prev, sortBy }));
+  }, [setFilters]);
+
+  const setLocation = useCallback((location?: string) => {
+    setFilters((prev) => ({ ...prev, location }));
+  }, [setFilters]);
+
+  return { setQuery, setTag, setReadingTime, setBlogType, setStatus, setArchive, setSortBy, setLocation } as const;
 }
 
 
