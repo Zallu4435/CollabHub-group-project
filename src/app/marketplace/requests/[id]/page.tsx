@@ -286,7 +286,7 @@ export default function RequestDetailsPage() {
               )}
               
               <button
-                onClick={() => router.push(`/marketplace/messages/${request.sellerId}`)}
+                onClick={() => router.push(`/marketplace/dashboard/messages/${request.sellerId}`)}
                 className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-50"
               >
                 Contact Seller

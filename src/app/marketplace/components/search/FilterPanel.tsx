@@ -102,24 +102,16 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-black">Filters</h3>
-        <div className="flex items-center space-x-4">
-          {/* Currency Selector */}
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-600">Currency:</span>
-            <CurrencySelector 
-              variant="compact" 
-              size="sm" 
-              showFlag={true}
-              showSymbol={true}
-              showName={false}
-            />
-          </div>
-          {activeFiltersCount > 0 && (
-            <Button variant="ghost" size="sm" onClick={onClearFilters}>
-              Clear All ({activeFiltersCount})
-            </Button>
-          )}
-        </div>
+        <button
+          onClick={onClearFilters}
+          disabled={activeFiltersCount === 0}
+          className="flex items-center gap-1 px-3 py-1.5 text-xs rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          <svg className="w-3.5 h-3.5 mr-1 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          Clear Filters{activeFiltersCount > 0 ? ` (${activeFiltersCount})` : ''}
+        </button>
       </div>
 
       {/* Categories */}

@@ -26,6 +26,9 @@ export interface Project {
     
     // Pricing & licensing
     price: number;
+  // Optional promotional pricing
+  originalPrice?: number; // If provided and > price, will render as struck-through
+  discountPercentage?: number; // If provided (>0), discount will be shown
     licenseType: LicenseType;
     
     // Categories

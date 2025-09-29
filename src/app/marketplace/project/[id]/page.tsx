@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { projectsApi, reviewsApi, sellersApi } from '../../lib/utils/api';
+import { projectsApi } from '../../lib/utils/api';
 import { Project } from '../../types/project';
 import { ProjectDetail } from '../../components/project/ProjectDetail';
 import { RelatedProjects } from '../../components/project/RelatedProjects';
@@ -34,8 +34,23 @@ export default function ProjectDetailPage() {
 
   const fetchRelatedProjects = async () => {
     try {
+      // Try category-based related projects first
       const response = await projectsApi.getRelated(projectId);
-      setRelatedProjects(response.data);
+      let items: Project[] = response.data || [];
+
+      // Fallback 1: trending projects
+      if (!items || items.length === 0) {
+        const trending = await projectsApi.getTrending();
+        items = trending.data.filter((p: Project) => p.id !== projectId).slice(0, 4);
+      }
+
+      // Fallback 2: any projects
+      if (!items || items.length === 0) {
+        const all = await projectsApi.getAll({ limit: 8 });
+        items = all.data.projects.filter((p: Project) => p.id !== projectId).slice(0, 4);
+      }
+
+      setRelatedProjects(items);
     } catch (err) {
       console.error('Error fetching related projects:', err);
     }
@@ -103,10 +118,9 @@ export default function ProjectDetailPage() {
         {relatedProjects.length > 0 && (
           <div className="mt-16">
             <RelatedProjects 
-              projects={relatedProjects}
-              onProjectClick={(project) => {
-                window.location.href = `/marketplace/project/${project.id}`;
-              }}
+              currentProject={project}
+              relatedProjects={relatedProjects}
+              maxItems={4}
             />
           </div>
         )}

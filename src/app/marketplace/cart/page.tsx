@@ -170,10 +170,10 @@ export default function CartPage() {
         {/* Cart Items */}
         <div className="lg:col-span-2">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <h2 className="text-2xl font-bold text-black mb-2">
               Shopping Cart ({cart.items.length} {cart.items.length === 1 ? 'item' : 'items'})
             </h2>
-            <p className="text-gray-600">
+            <p className="text-black">
               Review your selected projects and customize your licenses before checkout.
             </p>
           </div>
@@ -185,7 +185,6 @@ export default function CartPage() {
                 item={item}
                 onRemove={handleRemoveItem}
                 onUpdateLicense={handleUpdateLicense}
-                onUpdateQuantity={handleUpdateQuantity}
               />
             ))}
           </div>
@@ -207,15 +206,15 @@ export default function CartPage() {
         <div className="lg:col-span-1">
           <Card className="sticky top-4">
             <CardHeader>
-              <h2 className="text-xl font-semibold">Order Summary</h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <h2 className="text-xl font-semibold text-black">Order Summary</h2>
+              <p className="text-sm text-black mt-1">
                 {cart.estimatedDelivery} • {cart.currency}
               </p>
             </CardHeader>
             <CardContent>
               {/* Order Items Summary */}
               <div className="mb-6">
-                <h3 className="font-medium text-gray-900 mb-3">Items in Cart</h3>
+                <h3 className="font-medium text-black mb-3">Items in Cart</h3>
                 <div className="space-y-2">
                   {cart.items.map((item) => {
                     const licenseMultipliers: Record<string, number> = {
@@ -230,8 +229,8 @@ export default function CartPage() {
                     return (
                       <div key={item.id} className="flex justify-between text-sm">
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-900 truncate">{item.title}</p>
-                          <p className="text-gray-500">
+                          <p className="font-medium text-black truncate">{item.title}</p>
+                          <p className="text-black">
                             {item.licenseType} × {item.quantity}
                           </p>
                         </div>
@@ -246,7 +245,7 @@ export default function CartPage() {
 
               {/* Promo Code */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-black mb-2">
                   Promo Code
                 </label>
                 <div className="flex gap-2">
@@ -279,26 +278,26 @@ export default function CartPage() {
 
               {/* Price Breakdown */}
               <div className="space-y-3 mb-6">
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-sm text-black">
                   <span>Subtotal</span>
                   <span>${cart.subtotal.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-sm text-black">
                   <span>Platform Fee (5%)</span>
                   <span>${cart.platformFee.toFixed(2)}</span>
                 </div>
                 {cart.discount > 0 && (
-                  <div className="flex justify-between text-sm text-green-600">
+                  <div className="flex justify-between text-sm text-black">
                     <span>Discount</span>
                     <span>-${cart.discount.toFixed(2)}</span>
                   </div>
                 )}
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-sm text-black">
                   <span>Tax (8%)</span>
                   <span>${cart.tax.toFixed(2)}</span>
                 </div>
                 <div className="border-t pt-3">
-                  <div className="flex justify-between text-lg font-semibold">
+                  <div className="flex justify-between text-lg font-semibold text-black">
                     <span>Total</span>
                     <span>${cart.total.toFixed(2)}</span>
                   </div>
@@ -314,7 +313,7 @@ export default function CartPage() {
 
               {/* Payment Methods */}
               <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                <h4 className="text-sm font-medium text-gray-900 mb-2">Accepted Payment Methods</h4>
+                <h4 className="text-sm font-medium text-black mb-2">Accepted Payment Methods</h4>
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-5 bg-blue-600 rounded text-white text-xs flex items-center justify-center font-bold">V</div>
                   <div className="w-8 h-5 bg-red-600 rounded text-white text-xs flex items-center justify-center font-bold">M</div>
@@ -324,8 +323,8 @@ export default function CartPage() {
               </div>
 
               {/* Security Notice */}
-              <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
-                <div className="flex items-center text-sm text-green-800">
+                <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-center text-sm text-black">
                   <svg className="w-4 h-4 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
@@ -335,7 +334,7 @@ export default function CartPage() {
 
               {/* Support Info */}
               <div className="mt-4 text-center">
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-black">
                   Need help? <Link href="/marketplace/help" className="text-blue-600 hover:text-blue-700">Contact Support</Link>
                 </p>
               </div>

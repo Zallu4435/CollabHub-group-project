@@ -49,7 +49,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
   return (
     <div className="relative w-full">
-      <div className="relative">
+      <div className="relative bg-white border border-gray-200 rounded-xl shadow-sm focus-within:shadow-md transition-shadow">
+        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+
         <input
           type="text"
           value={query}
@@ -58,37 +64,39 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           onFocus={() => setShowDropdown(true)}
           onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
           placeholder={placeholder}
-          className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+          className="w-full pl-12 pr-28 py-3 rounded-xl bg-transparent focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-black placeholder:text-black"
         />
-        
-        {/* Search Icon */}
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
 
-        {/* Search Button */}
-        <button
-          onClick={() => handleSearch()}
-          className="absolute inset-y-0 right-0 pr-3 flex items-center text-black hover:text-blue-600"
-        >
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-          </svg>
-        </button>
+        <div className="absolute inset-y-0 right-0 pr-2 flex items-center gap-2">
+          {query && (
+            <button
+              onClick={() => setQuery('')}
+              className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+              aria-label="Clear"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+          <button
+            onClick={() => handleSearch()}
+            className="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-indigo-700 shadow"
+          >
+            Search
+          </button>
+        </div>
       </div>
 
-      {/* Suggestions Dropdown */}
       {showSuggestions && showDropdown && query.length === 0 && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+        <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
           <div className="p-2">
-            <div className="text-xs font-medium text-black mb-2 px-2">Popular Searches</div>
+            <div className="text-xs font-medium text-gray-700 mb-2 px-2">Popular Searches</div>
             {suggestions.map((suggestion) => (
               <button
                 key={suggestion}
                 onClick={() => handleSearch(suggestion)}
-                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 rounded-md"
+                className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-100"
               >
                 {suggestion}
               </button>
@@ -98,4 +106,4 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       )}
     </div>
   );
-};
+}

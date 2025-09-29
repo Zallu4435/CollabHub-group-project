@@ -9,6 +9,8 @@ import { Button } from '@/app/marketplace/components/ui/Button';
 import { Badge } from '@/app/marketplace/components/ui/Badge';
 import { Rating } from '@/app/marketplace/components/ui/Rating';
 import { TechStackTags } from '@/app/marketplace/components/project/TechStackTags';
+import { Project } from '@/app/marketplace/types/project';
+import { ProjectGrid } from '@/app/marketplace/components/project/ProjectGrid';
 
 interface WishlistItem {
   id: string;
@@ -82,6 +84,90 @@ export default function WishlistPage() {
   ]);
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [recommended, setRecommended] = useState<Project[]>([
+    {
+      id: 'r1',
+      title: 'Next.js SaaS Dashboard',
+      description: 'Modern SaaS dashboard with charts, billing, teams and dark mode.',
+      shortDescription: 'Full-featured Next.js SaaS admin dashboard.',
+      sellerId: 'seller9',
+      sellerName: 'Dev Studio',
+      sellerAvatar: '/images/avatars/sarah.jpg',
+      techStack: ['Next.js', 'TypeScript', 'Tailwind CSS'],
+      framework: 'Next.js',
+      deployment: ['Vercel'],
+      browserCompat: ['Chrome', 'Firefox', 'Safari'],
+      mobileResponsive: true,
+      screenshots: ['/images/products/react-dashboard-1.jpg'],
+      demoUrl: 'https://demo.example.com/next-saas',
+      price: 99.0,
+      originalPrice: 129.0,
+      discountPercentage: 20,
+      licenseType: 'commercial',
+      category: 'web-templates',
+      subcategory: 'next-js',
+      tags: ['dashboard', 'saas'],
+      downloads: 1200,
+      views: 20000,
+      rating: 4.9,
+      reviewCount: 210,
+      featured: true,
+      trending: true,
+      isNew: false,
+      isRequestOnly: false,
+      state: 'available_for_request',
+      requiresApproval: false,
+      autoApprove: true,
+      maxRequestsPerBuyer: 0,
+      totalRequests: 0,
+      pendingRequests: 0,
+      approvedRequests: 0,
+      rejectedRequests: 0,
+      completedRequests: 0,
+      createdAt: '2024-02-01',
+      updatedAt: '2024-03-01'
+    },
+    {
+      id: 'r2',
+      title: 'Flutter E-Commerce Kit',
+      description: 'Complete Flutter e-commerce app with payments and admin.',
+      shortDescription: 'Flutter app kit with Stripe and Firebase integration.',
+      sellerId: 'seller10',
+      sellerName: 'App Makers',
+      sellerAvatar: '/images/avatars/alex.jpg',
+      techStack: ['Flutter', 'Firebase', 'Stripe'],
+      framework: 'Flutter',
+      deployment: ['Play Store', 'App Store'],
+      browserCompat: [],
+      mobileResponsive: true,
+      screenshots: ['/images/products/mobile-ecommerce-1.jpg'],
+      demoUrl: 'https://demo.example.com/flutter-commerce',
+      price: 149.0,
+      licenseType: 'commercial',
+      category: 'mobile-apps',
+      subcategory: 'flutter',
+      tags: ['mobile', 'ecommerce'],
+      downloads: 980,
+      views: 15000,
+      rating: 4.7,
+      reviewCount: 95,
+      featured: false,
+      trending: true,
+      isNew: true,
+      isRequestOnly: false,
+      state: 'available_for_request',
+      requiresApproval: false,
+      autoApprove: true,
+      maxRequestsPerBuyer: 0,
+      totalRequests: 0,
+      pendingRequests: 0,
+      approvedRequests: 0,
+      rejectedRequests: 0,
+      completedRequests: 0,
+      createdAt: '2024-03-01',
+      updatedAt: '2024-03-15'
+    }
+  ]);
 
   const handleRemoveFromWishlist = (itemId: string) => {
     setWishlistItems(items => items.filter(item => item.id !== itemId));
@@ -142,7 +228,8 @@ export default function WishlistPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-black mb-2">My Wishlist</h1>
         <p className="text-black">
@@ -330,13 +417,10 @@ export default function WishlistPage() {
 
       {/* Recommendations */}
       <div className="mt-12 pt-8 border-t">
-        <h2 className="text-2xl font-bold text-black mb-6">
-          You might also like
-        </h2>
-        <p className="text-black mb-8">
-          Based on your wishlist and browsing history
-        </p>
-        {/* Add recommended projects grid here */}
+        <h2 className="text-2xl font-bold text-black mb-6">You might also like</h2>
+        <p className="text-black mb-6">Based on your wishlist and browsing history</p>
+        <ProjectGrid projects={recommended} columns={3} />
+      </div>
       </div>
     </div>
   );

@@ -424,7 +424,7 @@ export default function EscrowDetailsPage() {
                       <Button 
                         size="sm" 
                         variant="outline"
-                        onClick={() => window.open(`/marketplace/messages?user=${escrow.buyerId}`)}
+                    onClick={() => window.open(`/marketplace/dashboard/messages?user=${escrow.buyerId}`)}
                       >
                         💬 Message
                       </Button>
@@ -450,7 +450,7 @@ export default function EscrowDetailsPage() {
                     <Button 
                       size="sm" 
                       variant="outline"
-                      onClick={() => window.open(`/marketplace/messages?user=${escrow.sellerId}`)}
+                      onClick={() => window.open(`/marketplace/dashboard/messages?user=${escrow.sellerId}`)}
                     >
                       💬 Message
                     </Button>
@@ -488,7 +488,7 @@ export default function EscrowDetailsPage() {
                   <Button 
                     size="sm" 
                     variant="outline"
-                    onClick={() => window.open('/marketplace/messages')}
+                    onClick={() => window.open('/marketplace/dashboard/messages')}
                   >
                     View Messages
                   </Button>

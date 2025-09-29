@@ -217,34 +217,58 @@ export default function OrderManagementPage() {
         </Card>
       </div>
 
-      {/* Filters */}
-      <div className="mb-6">
-        <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg inline-flex">
+      {/* Filters + Tools */}
+      <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-wrap gap-1 bg-gray-100 p-1 rounded-lg">
           {([['all', 'All'], ['pending', 'Pending'], ['completed', 'Completed'], ['cancelled', 'Cancelled'], ['refunded', 'Refunded']] as const).map(([value, label]) => (
             <button
               key={value}
               onClick={() => setFilter(value)}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                 filter === value
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-white text-gray-900 shadow-sm ring-1 ring-gray-200'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
               }`}
             >
-              {label} ({orders.filter(o => value === 'all' || o.status === value).length})
+              {label}
+              <span className="ml-2 inline-flex items-center justify-center text-xs px-2 py-0.5 rounded-full bg-gray-200 text-gray-700">
+                {orders.filter(o => value === 'all' || o.status === value).length}
+              </span>
             </button>
           ))}
+        </div>
+        <div className="w-full md:w-64">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search orders..."
+              className="w-full pl-10 pr-3 py-2 border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
         </div>
       </div>
 
       {/* Orders Table */}
       <Card>
         <CardHeader>
-          <h2 className="text-xl font-semibold">Orders</h2>
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold">Orders</h2>
+              <p className="text-sm text-gray-600">{filteredOrders.length} result{filteredOrders.length === 1 ? '' : 's'}</p>
+            </div>
+            <div className="hidden md:flex items-center gap-2">
+              <Button variant="outline" size="sm">Export</Button>
+              <Button variant="outline" size="sm">Refresh</Button>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {filteredOrders.map((order) => (
-              <div key={order.id} className="border rounded-lg p-6 hover:bg-gray-50 transition-colors">
+              <div key={order.id} className="border rounded-lg p-6 hover:bg-gray-50 hover:shadow-md transition-all">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-4">
                     {/* Customer Avatar */}
@@ -281,7 +305,7 @@ export default function OrderManagementPage() {
                       </div>
 
                       {/* Project Info */}
-                      <div className="flex items-center space-x-3 mb-3">
+                      <div className="flex items-center space-x-3 mb-4">
                         <div className="w-16 h-12 rounded-md bg-gray-100 overflow-hidden">
                           <Image
                             src={order.projectThumbnail}
@@ -319,54 +343,55 @@ export default function OrderManagementPage() {
                         </div>
                       )}
 
-                      {/* Order Meta */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600 mb-4">
-                        <div>
-                          <span className="font-medium">Payment:</span> {order.paymentMethod}
-                        </div>
-                        <div>
-                          <span className="font-medium">Transaction:</span> {order.transactionId}
-                        </div>
-                        {order.downloadDate && (
+                      {/* Meta + Actions aligned */}
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm text-gray-600">
                           <div>
-                            <span className="font-medium">Downloaded:</span> {new Date(order.downloadDate).toLocaleDateString()}
+                            <span className="font-medium">Payment:</span> {order.paymentMethod}
                           </div>
-                        )}
-                      </div>
+                          <div>
+                            <span className="font-medium">Transaction:</span> {order.transactionId}
+                          </div>
+                          {order.downloadDate && (
+                            <div>
+                              <span className="font-medium">Downloaded:</span> {new Date(order.downloadDate).toLocaleDateString()}
+                            </div>
+                          )}
+                        </div>
 
-                      {/* Actions */}
-                      <div className="flex items-center space-x-3">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => openOrderModal(order)}
-                        >
-                          View Details
-                        </Button>
-
-                        {order.status === 'pending' && (
-                          <Button
-                            size="sm"
-                            onClick={() => handleStatusUpdate(order.id, 'completed')}
-                          >
-                            Mark Complete
-                          </Button>
-                        )}
-
-                        {order.status === 'completed' && (
+                        <div className="flex items-center gap-3 md:justify-end">
                           <Button
                             variant="outline"
                             size="sm"
-                            className="text-red-600 border-red-300 hover:bg-red-50"
-                            onClick={() => handleRefund(order.id)}
+                            onClick={() => openOrderModal(order)}
                           >
-                            Process Refund
+                            View Details
                           </Button>
-                        )}
 
-                        <Button variant="ghost" size="sm">
-                          Contact Customer
-                        </Button>
+                          {order.status === 'pending' && (
+                            <Button
+                              size="sm"
+                              onClick={() => handleStatusUpdate(order.id, 'completed')}
+                            >
+                              Mark Complete
+                            </Button>
+                          )}
+
+                          {order.status === 'completed' && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-red-600 border-red-300 hover:bg-red-50"
+                              onClick={() => handleRefund(order.id)}
+                            >
+                              Process Refund
+                            </Button>
+                          )}
+
+                          <Button variant="ghost" size="sm">
+                            Contact Customer
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>

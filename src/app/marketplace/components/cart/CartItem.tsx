@@ -12,14 +12,12 @@ interface CartItemProps {
   item: CartItemType;
   onRemove: (itemId: string) => void;
   onUpdateLicense?: (itemId: string, newLicense: string) => void;
-  onUpdateQuantity?: (itemId: string, quantity: number) => void;
 }
 
 export const CartItem: React.FC<CartItemProps> = ({
   item,
   onRemove,
-  onUpdateLicense,
-  onUpdateQuantity
+  onUpdateLicense
 }) => {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -99,11 +97,11 @@ export const CartItem: React.FC<CartItemProps> = ({
             <div className="flex items-start justify-between mb-2">
               <div className="flex-1 min-w-0">
                 <Link href={`/project/${item.projectId}`}>
-                  <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-600 line-clamp-2">
+                  <h3 className="text-lg font-semibold text-black hover:text-blue-600 line-clamp-2">
                     {item.title}
                   </h3>
                 </Link>
-                <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                <p className="text-sm text-black mt-1 line-clamp-2">
                   {item.description}
                 </p>
               </div>
@@ -112,31 +110,31 @@ export const CartItem: React.FC<CartItemProps> = ({
             {/* Seller Info */}
             <div className="flex items-center gap-2 mb-3">
               <div className="w-6 h-6 bg-gray-300 rounded-full flex-shrink-0"></div>
-              <Link href={`/marketplace/seller/${item.sellerId}`} className="text-sm text-gray-600 hover:text-blue-600">
+              <Link href={`/marketplace/seller/${item.sellerId}`} className="text-sm text-black hover:text-blue-600">
                 by {item.sellerName}
               </Link>
               <div className="flex items-center gap-1 ml-2">
                 <Rating rating={item.rating} size="sm" showNumber={false} />
-                <span className="text-xs text-gray-500">({item.reviewCount})</span>
+                <span className="text-xs text-black">({item.reviewCount})</span>
               </div>
             </div>
 
             {/* Tech Stack and Tags */}
             <div className="flex flex-wrap gap-1 mb-3">
               {item.techStack.slice(0, 3).map((tech, index) => (
-                <Badge key={index} variant="secondary" size="sm">
+                <Badge key={index} variant="info" size="sm">
                   {tech}
                 </Badge>
               ))}
               {item.techStack.length > 3 && (
-                <Badge variant="secondary" size="sm">
+                <Badge variant="default" size="sm">
                   +{item.techStack.length - 3} more
                 </Badge>
               )}
             </div>
 
             {/* Additional Info */}
-            <div className="flex items-center gap-4 text-xs text-gray-500">
+            <div className="flex items-center gap-4 text-xs text-black">
               <span>📁 {item.fileSize}</span>
               <span>🔄 Updated {formatDate(item.lastUpdated)}</span>
               <span>📂 {item.category}</span>
@@ -148,7 +146,7 @@ export const CartItem: React.FC<CartItemProps> = ({
         <div className="lg:w-80 flex flex-col gap-4">
           {/* License Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-black mb-2">
               License Type
             </label>
             {onUpdateLicense ? (
@@ -170,32 +168,7 @@ export const CartItem: React.FC<CartItemProps> = ({
             )}
           </div>
 
-          {/* Quantity */}
-          {onUpdateQuantity && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Quantity
-              </label>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onUpdateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                  disabled={item.quantity <= 1}
-                >
-                  -
-                </Button>
-                <span className="w-12 text-center text-sm font-medium">{item.quantity}</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                >
-                  +
-                </Button>
-              </div>
-            </div>
-          )}
+          {/* Quantity controls removed by design */}
 
           {/* Price */}
           <div className="text-right">
@@ -235,7 +208,7 @@ export const CartItem: React.FC<CartItemProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* License Features */}
             <div>
-              <h4 className="font-medium text-gray-900 mb-3">License Features</h4>
+              <h4 className="font-medium text-black mb-3">License Features</h4>
               <div className="space-y-2">
                 {currentLicense?.features.map((feature, index) => (
                   <div key={index} className="flex items-center gap-2 text-sm">
@@ -250,22 +223,22 @@ export const CartItem: React.FC<CartItemProps> = ({
 
             {/* Project Info */}
             <div>
-              <h4 className="font-medium text-gray-900 mb-3">Project Information</h4>
+              <h4 className="font-medium text-black mb-3">Project Information</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">File Size:</span>
+                  <span className="text-black">File Size:</span>
                   <span>{item.fileSize}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Last Updated:</span>
+                  <span className="text-black">Last Updated:</span>
                   <span>{formatDate(item.lastUpdated)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Category:</span>
+                  <span className="text-black">Category:</span>
                   <span className="capitalize">{item.category}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Added to Cart:</span>
+                  <span className="text-black">Added to Cart:</span>
                   <span>{formatDate(item.addedAt)}</span>
                 </div>
               </div>

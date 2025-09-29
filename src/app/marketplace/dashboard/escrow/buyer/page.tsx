@@ -1,24 +1,21 @@
-// market/src/app/escrow/seller/page.tsx
+// market/src/app/escrow/buyer/page.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader } from '../../components/ui/Card';
-import { Button } from '../../components/ui/Button';
-import { Badge } from '../../components/ui/Badge';
-import { EscrowCard } from '../../components/escrow/EscrowCard';
-import { EscrowUpload } from '../../components/escrow/EscrowUpload';
-import { escrowService } from '../../lib/services/escrowService';
-import { EscrowProject, EscrowStats, CreateEscrowRequest } from '../../types/escrow';
+import { Card, CardContent, CardHeader } from '../../../components/ui/Card';
+import { Button } from '../../../components/ui/Button';
+import { Badge } from '../../../components/ui/Badge';
+import { EscrowCard } from '@/app/marketplace/components/escrow/EscrowCard';
+import { escrowService } from '../../../lib/services/escrowService';
+import { EscrowProject, EscrowStats } from '../../../types/escrow';
 
-export default function SellerEscrowPage() {
+export default function BuyerEscrowPage() {
   const [escrows, setEscrows] = useState<EscrowProject[]>([]);
   const [stats, setStats] = useState<EscrowStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showUpload, setShowUpload] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [filter, setFilter] = useState<string>('all');
 
-  const sellerId = 'seller_1'; // In real app, get from auth context
+  const buyerId = 'buyer_1'; // In real app, get from auth context
 
   useEffect(() => {
     loadData();
@@ -28,8 +25,8 @@ export default function SellerEscrowPage() {
     try {
       setLoading(true);
       const [escrowsResponse, statsResponse] = await Promise.all([
-        escrowService.getSellerEscrows(sellerId),
-        escrowService.getStats(sellerId, 'seller')
+        escrowService.getBuyerEscrows(buyerId),
+        escrowService.getStats(buyerId, 'buyer')
       ]);
       
       setEscrows(escrowsResponse.escrows);
@@ -41,20 +38,6 @@ export default function SellerEscrowPage() {
     }
   };
 
-  const handleUpload = async (data: CreateEscrowRequest) => {
-    try {
-      setUploading(true);
-      await escrowService.createEscrow(data, sellerId);
-      setShowUpload(false);
-      loadData(); // Reload data
-    } catch (error) {
-      console.error('Failed to create escrow:', error);
-      alert('Failed to upload project to escrow');
-    } finally {
-      setUploading(false);
-    }
-  };
-
   const handleViewDetails = (escrowId: string) => {
     // Navigate to escrow details page
     window.location.href = `/marketplace/escrow/${escrowId}`;
@@ -62,13 +45,20 @@ export default function SellerEscrowPage() {
 
   const handleTakeAction = async (escrowId: string, action: string) => {
     try {
-      if (action === 'reclaim') {
-        await escrowService.reclaimProject(escrowId, sellerId);
-        loadData(); // Reload data
-        alert('Project reclaimed successfully');
-      } else if (action === 'view') {
-        handleViewDetails(escrowId);
+      if (action === 'purchase') {
+        // Navigate to purchase page
+        window.location.href = `/marketplace/escrow/${escrowId}/purchase`;
+      } else if (action === 'download') {
+        // Handle download
+        const escrow = escrows.find(e => e.id === escrowId);
+        if (escrow && escrow.accessToken) {
+          // In real app, this would trigger download with access token
+          alert('Download started! (This is a demo)');
+        }
       } else if (action === 'dispute') {
+        // Navigate to dispute page
+        window.location.href = `/marketplace/escrow/${escrowId}/dispute`;
+      } else if (action === 'view') {
         handleViewDetails(escrowId);
       }
     } catch (error) {
@@ -93,15 +83,19 @@ export default function SellerEscrowPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="bg-white">
+      <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <h1 className="text-3xl font-bold">Buyer Escrow Dashboard</h1>
+          <p className="text-blue-100">Manage your purchased projects</p>
+        </div>
+      </section>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Seller Escrow Dashboard</h1>
-            <p className="text-gray-600 mt-2">Manage your projects in escrow</p>
-          </div>
-          <Button onClick={() => setShowUpload(true)}>
-            Upload New Project
+          <div></div>
+          <Button onClick={() => window.location.href = '/marketplace'}>
+            Browse Projects
           </Button>
         </div>
       </div>
@@ -113,10 +107,10 @@ export default function SellerEscrowPage() {
             <CardContent className="p-6">
               <div className="flex items-center">
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-600">Total Projects</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.totalEscrows}</p>
+                  <p className="text-sm font-medium text-black">Total Purchases</p>
+                  <p className="text-2xl font-bold text-black">{stats.totalEscrows}</p>
                 </div>
-                <div className="text-2xl">📦</div>
+                <div className="text-2xl">🛒</div>
               </div>
             </CardContent>
           </Card>
@@ -125,7 +119,7 @@ export default function SellerEscrowPage() {
             <CardContent className="p-6">
               <div className="flex items-center">
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-600">Pending Payment</p>
+                  <p className="text-sm font-medium text-black">Pending Payment</p>
                   <p className="text-2xl font-bold text-yellow-600">{stats.pendingPayment}</p>
                 </div>
                 <div className="text-2xl">⏳</div>
@@ -137,7 +131,7 @@ export default function SellerEscrowPage() {
             <CardContent className="p-6">
               <div className="flex items-center">
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-600">Released</p>
+                  <p className="text-sm font-medium text-black">Released</p>
                   <p className="text-2xl font-bold text-green-600">{stats.released}</p>
                 </div>
                 <div className="text-2xl">✅</div>
@@ -149,10 +143,10 @@ export default function SellerEscrowPage() {
             <CardContent className="p-6">
               <div className="flex items-center">
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-600">Total Earnings</p>
+                  <p className="text-sm font-medium text-black">Total Spent</p>
                   <p className="text-2xl font-bold text-blue-600">${stats.totalValue.toFixed(2)}</p>
                 </div>
-                <div className="text-2xl">💰</div>
+                <div className="text-2xl">💳</div>
               </div>
             </CardContent>
           </Card>
@@ -204,19 +198,19 @@ export default function SellerEscrowPage() {
       {filteredEscrows.length === 0 ? (
         <Card>
           <CardContent className="p-12 text-center">
-            <div className="text-6xl mb-4">📦</div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {filter === 'all' ? 'No projects in escrow' : `No ${filter.replace('_', ' ')} projects`}
+            <div className="text-6xl mb-4">🛒</div>
+            <h3 className="text-lg font-medium text-black mb-2">
+              {filter === 'all' ? 'No purchases yet' : `No ${filter.replace('_', ' ')} purchases`}
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-black mb-6">
               {filter === 'all' 
-                ? 'Upload your first project to get started with escrow'
-                : `You don't have any projects in ${filter.replace('_', ' ')} state`
+                ? 'Browse the marketplace to find projects to purchase'
+                : `You don't have any purchases in ${filter.replace('_', ' ')} state`
               }
             </p>
             {filter === 'all' && (
-              <Button onClick={() => setShowUpload(true)}>
-                Upload Project
+              <Button onClick={() => window.location.href = '/marketplace'}>
+                Browse Marketplace
               </Button>
             )}
           </CardContent>
@@ -227,26 +221,14 @@ export default function SellerEscrowPage() {
             <EscrowCard
               key={escrow.id}
               escrow={escrow}
-              userRole="seller"
+              userRole="buyer"
               onViewDetails={handleViewDetails}
               onTakeAction={handleTakeAction}
             />
           ))}
         </div>
       )}
-
-      {/* Upload Modal */}
-      {showUpload && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <EscrowUpload
-              onSubmit={handleUpload}
-              onCancel={() => setShowUpload(false)}
-              loading={uploading}
-            />
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

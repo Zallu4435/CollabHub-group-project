@@ -207,17 +207,27 @@ export default function ProjectReviewsPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Breadcrumb */}
-      <div className="mb-6">
-        <div className="flex items-center space-x-2 text-sm text-gray-600">
-          <Link href={`/project/${projectId}`} className="hover:text-blue-600">
-            {project.title}
-          </Link>
-          <span>•</span>
-          <span className="text-gray-900">Reviews</span>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Breadcrumb / Back */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2 text-sm text-gray-700">
+              <Link href="/" className="hover:text-blue-600">Home</Link>
+              <span>/</span>
+              <Link href="/marketplace" className="hover:text-blue-600">Marketplace</Link>
+              <span>/</span>
+              <Link href={`/marketplace/project/${projectId}`} className="hover:text-blue-600">
+                {project.title}
+              </Link>
+              <span>/</span>
+              <span className="text-gray-900">Reviews</span>
+            </div>
+            <Link href={`/marketplace/project/${projectId}`} className="text-sm text-gray-700 hover:text-gray-900">
+              ← Back to project
+            </Link>
+          </div>
         </div>
-      </div>
 
       {/* Header */}
       <div className="mb-8">
@@ -234,7 +244,7 @@ export default function ProjectReviewsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Reviews Overview Sidebar */}
         <div className="lg:col-span-1">
           {/* Rating Summary */}
@@ -262,7 +272,7 @@ export default function ProjectReviewsPage() {
                       <button
                         onClick={() => setFilter(rating as any)}
                         className={`flex items-center space-x-1 text-sm hover:text-blue-600 ${
-                          filter === rating ? 'text-blue-600 font-medium' : 'text-gray-600'
+                          filter === rating ? 'text-blue-700 font-medium' : 'text-gray-700'
                         }`}
                       >
                         <span>{rating}</span>
@@ -276,7 +286,7 @@ export default function ProjectReviewsPage() {
                           style={{ width: `${(count / reviewStats.total) * 100}%` }}
                         />
                       </div>
-                      <span className="text-sm text-gray-600 w-8 text-right">
+                      <span className="text-sm text-gray-700 w-8 text-right">
                         {count}
                       </span>
                     </div>
@@ -317,7 +327,7 @@ export default function ProjectReviewsPage() {
         <div className="lg:col-span-3">
           {/* Sort Controls */}
           <div className="mb-6 flex items-center justify-between">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-700">
               Showing {sortedReviews.length} of {reviewStats.total} reviews
             </div>
             <div className="flex items-center space-x-2">
@@ -325,7 +335,7 @@ export default function ProjectReviewsPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="border border-gray-300 rounded-md px-3 py-1 text-sm"
+                className="border border-gray-300 rounded-md px-3 py-1 text-sm text-gray-800 bg-white"
               >
                 <option value="newest">Newest</option>
                 <option value="oldest">Oldest</option>
@@ -373,7 +383,7 @@ export default function ProjectReviewsPage() {
                           </div>
                           <div className="flex items-center space-x-2">
                             <Rating rating={review.rating} size="sm" showNumber={false} />
-                            <span className="text-sm text-gray-500">
+                            <span className="text-sm text-gray-600">
                               {new Date(review.createdAt).toLocaleDateString()}
                             </span>
                           </div>
@@ -385,7 +395,7 @@ export default function ProjectReviewsPage() {
                         <h5 className="font-medium text-gray-900 mb-2">
                           {review.title}
                         </h5>
-                        <p className="text-gray-700 leading-relaxed">
+                        <p className="text-gray-800 leading-relaxed">
                           {review.comment}
                         </p>
                       </div>
@@ -416,11 +426,11 @@ export default function ProjectReviewsPage() {
                             <Badge variant="info" size="sm">
                               Developer Response
                             </Badge>
-                            <span className="text-sm text-gray-600">
+                            <span className="text-sm text-gray-700">
                               {new Date(review.response.createdAt).toLocaleDateString()}
                             </span>
                           </div>
-                          <p className="text-gray-700 text-sm">
+                          <p className="text-gray-800 text-sm">
                             <strong>{review.response.sellerName}:</strong> {review.response.comment}
                           </p>
                         </div>
@@ -433,8 +443,8 @@ export default function ProjectReviewsPage() {
                             onClick={() => handleHelpful(review.id)}
                             className={`flex items-center space-x-1 ${
                               review.wasHelpful
-                                ? 'text-blue-600'
-                                : 'text-gray-600 hover:text-blue-600'
+                                ? 'text-blue-700'
+                                : 'text-gray-700 hover:text-blue-700'
                             }`}
                           >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -443,7 +453,7 @@ export default function ProjectReviewsPage() {
                             <span>Helpful ({review.helpful})</span>
                           </button>
 
-                          <button className="text-gray-600 hover:text-blue-600">
+                          <button className="text-gray-700 hover:text-blue-700">
                             Report
                           </button>
                         </div>
@@ -464,7 +474,7 @@ export default function ProjectReviewsPage() {
           {/* Load More Button */}
           {sortedReviews.length < reviewStats.total && (
             <div className="text-center mt-8">
-              <Button variant="outline">
+              <Button variant="outline" className="text-gray-800">
                 Load More Reviews
               </Button>
             </div>
@@ -480,6 +490,7 @@ export default function ProjectReviewsPage() {
           onClose={() => setShowWriteReview(false)}
         />
       )}
+      </div>
     </div>
   );
 }

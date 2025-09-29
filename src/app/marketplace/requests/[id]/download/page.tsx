@@ -270,7 +270,7 @@ export default function DownloadPage() {
                       Your download access has expired. Please contact the seller for assistance.
                     </p>
                     <button
-                      onClick={() => router.push(`/marketplace/messages/${request.sellerId}`)}
+                    onClick={() => router.push(`/marketplace/dashboard/messages/${request.sellerId}`)}
                       className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-50"
                     >
                       Contact Seller
@@ -282,7 +282,7 @@ export default function DownloadPage() {
                       You have reached the maximum number of downloads.
                     </p>
                     <button
-                      onClick={() => router.push(`/marketplace/messages/${request.sellerId}`)}
+                    onClick={() => router.push(`/marketplace/dashboard/messages/${request.sellerId}`)}
                       className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-50"
                     >
                       Contact Seller
@@ -329,7 +329,7 @@ export default function DownloadPage() {
                 </p>
                 <div className="space-y-2">
                   <button
-                    onClick={() => router.push(`/marketplace/messages/${request.sellerId}`)}
+                    onClick={() => router.push(`/marketplace/dashboard/messages/${request.sellerId}`)}
                     className="w-full text-left px-3 py-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded"
                   >
                     Contact Seller
