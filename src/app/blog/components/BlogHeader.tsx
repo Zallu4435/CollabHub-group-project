@@ -4,6 +4,12 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 
 export default function BlogHeader() {
+  // Mock user data - replace with real auth context in production
+  const user = {
+    name: 'Jane Doe',
+    email: 'jane@example.com',
+    avatar: '', // Add avatar URL if available
+  };
   return (
     <nav className="border-b border-gray-100 sticky top-0 bg-white/95 backdrop-blur-sm z-50">
       <div className="max-w-6xl mx-auto px-4">
@@ -25,7 +31,7 @@ export default function BlogHeader() {
             <Link href="/blog/create" className="bg-black text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
               Write
             </Link>
-            <ProfileMenu />
+            <ProfileMenu user={user} />
           </div>
 
           <button className="md:hidden p-2" aria-label="Open menu">
@@ -39,7 +45,7 @@ export default function BlogHeader() {
   );
 }
 
-function ProfileMenu() {
+function ProfileMenu({ user }: { user: { name: string; email: string; avatar?: string } }) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -81,28 +87,22 @@ function ProfileMenu() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setOpen(!open)}
-        className="w-10 h-10 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full cursor-pointer 
+        className="flex items-center space-x-2 w-auto h-10 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full cursor-pointer 
                    hover:shadow-md hover:scale-105 active:scale-95 transition-all duration-200 
-                   flex items-center justify-center border-2 border-transparent 
-                   focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+                   border-2 border-transparent focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 px-3"
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label="Open profile menu"
       >
         {/* Profile icon or avatar placeholder */}
-        <svg 
-          className="w-5 h-5 text-gray-600" 
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24"
-        >
-          <path 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            strokeWidth={2} 
-            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" 
-          />
-        </svg>
+        <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white font-semibold text-sm">
+          {user.avatar ? (
+            <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full object-cover" />
+          ) : (
+            user.name.charAt(0).toUpperCase()
+          )}
+        </div>
+        <span className="hidden lg:block text-sm font-medium text-gray-900">{user.name}</span>
       </button>
 
       {/* Dropdown Menu */}

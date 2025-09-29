@@ -444,12 +444,12 @@ const CommunityPlatformPage: React.FC = () => {
             <div>
               <h3 className="text-lg font-semibold mb-4">Platform</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
+                <li><a href="/blog" className="hover:text-white transition-colors">Blog</a></li>
                 <li><a href="/project" className="hover:text-white transition-colors">Projects</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Marketplace</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Posts</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Q&A</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Community</a></li>
+                <li><a href="/marketplace" className="hover:text-white transition-colors">Marketplace</a></li>
+                <li><a href="/posts" className="hover:text-white transition-colors">Posts</a></li>
+                <li><a href="/qa" className="hover:text-white transition-colors">Q&A</a></li>
+                <li><a href="/community" className="hover:text-white transition-colors">Community</a></li>
               </ul>
             </div>
 
@@ -457,10 +457,10 @@ const CommunityPlatformPage: React.FC = () => {
             <div>
               <h3 className="text-lg font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
+                <li><a href="/about" className="hover:text-white transition-colors">About Us</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Press</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+                <li><a href="/contact" className="hover:text-white transition-colors">Contact</a></li>
               </ul>
             </div>
 

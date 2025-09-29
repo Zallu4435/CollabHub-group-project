@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import { CurrencySelector } from '@/components/ui/CurrencySelector';
 
 const Header: React.FC = () => {
   return (
@@ -23,7 +24,19 @@ const Header: React.FC = () => {
         </nav>
 
         {/* User Actions */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3">
+          {/* Currency Selector */}
+          <div className="hidden sm:block">
+            <CurrencySelector 
+              variant="minimal" 
+              size="sm" 
+              showFlag={true}
+              showSymbol={false}
+              showName={false}
+              className="text-white"
+            />
+          </div>
+          
           <Link href="/auth/login" className="px-4 py-2 bg-white bg-opacity-20 text-gray-800 rounded-full text-sm font-semibold hover:bg-opacity-30 transition-all">
             Sign In
           </Link>
