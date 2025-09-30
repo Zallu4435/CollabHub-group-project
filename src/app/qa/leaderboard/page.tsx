@@ -2,6 +2,7 @@
 "use client"
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Trophy, Award, TrendingUp, Users, Calendar, Filter, Search, Star, Medal, Crown } from 'lucide-react'
 import TopContributors from '../components/leaderboard/TopContributors'
 import CommunityChallenge from '../components/leaderboard/CommunityChallenge'
@@ -152,9 +153,14 @@ export default function LeaderboardPage() {
                         <h2 className="text-xl font-semibold text-gray-900">Community Challenges</h2>
                         <p className="text-sm text-gray-600">Join challenges to earn badges and reputation</p>
                       </div>
-                      <Button variant="primary" size="sm">
-                        Create Challenge
-                      </Button>
+                      <div>
+                        <Link
+                          href="/qa/leaderboard/challenges"
+                          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
+                        >
+                          View all challenges
+                        </Link>
+                      </div>
                     </div>
                     <CommunityChallenge />
                   </div>
@@ -185,7 +191,7 @@ export default function LeaderboardPage() {
                             variant={badge.rarity === 'common' ? 'secondary' : 
                                    badge.rarity === 'uncommon' ? 'primary' :
                                    badge.rarity === 'rare' ? 'warning' :
-                                   badge.rarity === 'epic' ? 'success' : 'error'}
+                                   badge.rarity === 'epic' ? 'success' : 'danger'}
                             size="sm"
                           >
                             {badge.rarity}

@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { Question } from '../../lib/types/question.types'
 import QuestionCard from './QuestionCard'
-import { Plus, Star } from 'lucide-react'
+import { Plus, Star, Search } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { useInfiniteScroll } from '../../hooks/useInfiniteScroll'
 import { QuestionListSkeleton } from './QuestionSkeleton'

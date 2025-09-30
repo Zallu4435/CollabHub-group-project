@@ -1,11 +1,13 @@
 // qa/components/leaderboard/CommunityChallenge.tsx
 "use client"
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Target, Clock, Users, Award, ChevronRight } from 'lucide-react'
 import { Card } from '../ui/Card'
 import { Badge } from '../ui/Badge'
 import { Button } from '../ui/Button'
+import { questions } from '../../lib/dummy-data/questions'
+import Link from 'next/link'
 
 interface Challenge {
   id: string
@@ -73,6 +75,28 @@ const mockChallenges: Challenge[] = [
 
 export default function CommunityChallenge({ className = '' }: { className?: string }) {
   const [challenges, setChallenges] = useState(mockChallenges)
+  const [justJoinedId, setJustJoinedId] = useState<string | null>(null)
+  const [selectedChallengeId, setSelectedChallengeId] = useState<string | null>(null)
+
+  // Personal progress for the current user (dummy, local state only)
+  const [userProgress, setUserProgress] = useState<Record<string, number>>(() => {
+    const map: Record<string, number> = {}
+    for (const c of mockChallenges) map[c.id] = Math.min(c.current, c.target)
+    return map
+  })
+  const [completed, setCompleted] = useState<Record<string, boolean>>({})
+  const [claimed, setClaimed] = useState<Record<string, boolean>>({})
+  const [completionRef, setCompletionRef] = useState<Record<string, string>>({})
+  const [attempts, setAttempts] = useState<Record<string, Array<{ id: string; questionId: string; url?: string; note?: string; status: 'pending' | 'approved' }>>>({})
+  const [newAttempt, setNewAttempt] = useState<{ questionId: string; url: string; note: string }>({ questionId: '', url: '', note: '' })
+
+  const generateCompletionRef = (challengeId: string) => {
+    const date = new Date().toISOString().slice(0, 10).replace(/-/g, '')
+    return `CHLG-${challengeId}-${date}`
+  }
+
+  const selectedChallenge = useMemo(() => challenges.find(c => c.id === selectedChallengeId) || null, [challenges, selectedChallengeId])
+  const selectedProgress = selectedChallenge ? userProgress[selectedChallenge.id] || 0 : 0
 
   const handleJoinChallenge = (challengeId: string) => {
     setChallenges(prev => 
@@ -82,6 +106,9 @@ export default function CommunityChallenge({ className = '' }: { className?: str
           : challenge
       )
     )
+    setJustJoinedId(challengeId)
+    setTimeout(() => setJustJoinedId(current => (current === challengeId ? null : current)), 2500)
+    setSelectedChallengeId(challengeId)
   }
 
   const getTypeColor = (type: string) => {
@@ -102,12 +129,150 @@ export default function CommunityChallenge({ className = '' }: { className?: str
     }
   }
 
+  const openDetails = (challengeId: string) => {
+    // navigation handled via link on card
+    setSelectedChallengeId(challengeId)
+  }
+
+  const incrementProgress = (challengeId: string, amount: number = 1) => {
+    const challenge = challenges.find(c => c.id === challengeId)
+    if (!challenge) return
+    setUserProgress(prev => {
+      const next = { ...prev }
+      const currentValue = next[challengeId] || 0
+      next[challengeId] = Math.min(currentValue + amount, challenge.target)
+      return next
+    })
+    // Optionally reflect some global progress to make the bar move
+    setChallenges(prev => prev.map(c => c.id === challengeId
+      ? { ...c, current: Math.min(c.current + amount, c.target) }
+      : c
+    ))
+    // Mark completed if reached target
+    const nextValue = Math.min((userProgress[challengeId] || 0) + amount, challenge.target)
+    if (nextValue >= challenge.target) {
+      setCompleted(prev => ({ ...prev, [challengeId]: true }))
+      setCompletionRef(prev => prev[challengeId] ? prev : ({ ...prev, [challengeId]: generateCompletionRef(challengeId) }))
+    }
+  }
+
+  const completeChallenge = (challengeId: string) => {
+    const challenge = challenges.find(c => c.id === challengeId)
+    if (!challenge) return
+    setUserProgress(prev => ({ ...prev, [challengeId]: challenge.target }))
+    setChallenges(prev => prev.map(c => c.id === challengeId ? { ...c, current: c.target } : c))
+    setCompleted(prev => ({ ...prev, [challengeId]: true }))
+    setCompletionRef(prev => prev[challengeId] ? prev : ({ ...prev, [challengeId]: generateCompletionRef(challengeId) }))
+  }
+
+  const claimReward = (challengeId: string) => {
+    if (!completed[challengeId]) return
+    setClaimed(prev => ({ ...prev, [challengeId]: true }))
+  }
+
+  const addAttempt = (challengeId: string) => {
+    if (!selectedChallenge) return
+    const pickedId = newAttempt.questionId || ''
+    const enteredUrl = newAttempt.url?.trim()
+    if (!pickedId && !enteredUrl) return
+    const id = `att-${Date.now()}`
+    setAttempts(prev => {
+      const list = prev[challengeId] || []
+      return { ...prev, [challengeId]: [...list, { id, questionId: pickedId, url: enteredUrl, note: newAttempt.note || '', status: 'pending' }] }
+    })
+    // For demo, count each submission as progress +1
+    incrementProgress(challengeId, 1)
+    setNewAttempt({ questionId: '', url: '', note: '' })
+  }
+
+  const getSpecsForChallenge = (challenge: Challenge) => {
+    // Dummy specifications by type
+    if (challenge.type === 'daily') {
+      return {
+        objective: 'Answer 3 unanswered questions today',
+        howToEarn: [
+          'Post helpful, original answers',
+          'Focus on questions with no accepted answer',
+          'Avoid low-effort or copied content'
+        ],
+        rules: [
+          'Only actions within today count',
+          'Edits or comments do not count as answers',
+          'Spam or duplicated content is disqualified'
+        ],
+        checklist: [
+          'Find an unanswered question',
+          'Write a clear and detailed solution',
+          'Format code and cite references',
+          'Post and monitor for feedback'
+        ]
+      }
+    }
+    if (challenge.type === 'weekly') {
+      return {
+        objective: 'Get 10 upvotes on your answers this week',
+        howToEarn: [
+          'Provide high-quality, well-explained answers',
+          'Add references and runnable snippets',
+          'Answer trending topics where you have expertise'
+        ],
+        rules: [
+          'Only upvotes received this week count',
+          'Self-votes or coordinated voting are not allowed',
+          'Edits do not change vote counting rules'
+        ],
+        checklist: [
+          'Pick questions you can answer expertly',
+          'Explain the why, not only the how',
+          'Add code and edge cases',
+          'Follow up with clarifications'
+        ]
+      }
+    }
+    return {
+      objective: 'Ask 5 well-researched questions this month',
+      howToEarn: [
+        'Include context, attempts, and expected outcomes',
+        'Tag properly so experts can find your question',
+        'Keep one problem per question'
+      ],
+      rules: [
+        'Questions must follow community guidelines',
+        'Low-effort or off-topic posts do not count',
+        'Edits within the month are allowed'
+      ],
+      checklist: [
+        'Describe the problem with examples',
+        'Share minimal reproducible code (if relevant)',
+        'List what you tried and errors seen',
+        'Select accurate tags'
+      ]
+    }
+  }
+
+  const getCtaForChallenge = (challenge: Challenge) => {
+    if (challenge.type === 'daily') {
+      return { label: 'Answer Questions', href: '/qa' }
+    }
+    if (challenge.type === 'weekly') {
+      return { label: 'Find Questions to Answer', href: '/qa' }
+    }
+    return { label: 'Ask a Question', href: '/qa/ask' }
+  }
+
   return (
     <div className={className}>
       {/* Active Challenges */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {challenges.map(challenge => (
           <Card key={challenge.id} className="relative overflow-hidden">
+            {justJoinedId === challenge.id && (
+              <div className="absolute inset-x-0 top-0 z-20">
+                <div className="m-3 rounded-lg bg-green-50 border border-green-200 px-3 py-2 text-sm text-green-800 shadow-sm">
+                  You’ve joined this challenge! Progress will update as you contribute.
+                </div>
+              </div>
+            )}
             {/* Challenge Type Badge */}
             <div className="absolute top-4 right-4 z-10">
               <Badge variant={getTypeColor(challenge.type)} size="sm">
@@ -183,10 +348,13 @@ export default function CommunityChallenge({ className = '' }: { className?: str
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                   Participating
                 </Badge>
-                <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors">
-                  <span>View Progress</span>
+                <Link
+                  href={`/qa/leaderboard/challenge/${challenge.id}`}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
+                >
+                  <span>View full challenge</span>
                   <ChevronRight className="w-4 h-4" />
-                </button>
+                </Link>
               </div>
             ) : (
               <Button
@@ -209,9 +377,9 @@ export default function CommunityChallenge({ className = '' }: { className?: str
             <h3 className="text-xl font-bold text-gray-900">Previous Challenges</h3>
             <p className="text-sm text-gray-600">Completed community challenges and their achievements</p>
           </div>
-          <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+          <Link href="/qa/leaderboard/challenges?view=history" className="text-sm text-blue-600 hover:text-blue-800 font-medium">
             View All History
-          </button>
+          </Link>
         </div>
         
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -245,6 +413,8 @@ export default function CommunityChallenge({ className = '' }: { className?: str
           ))}
         </div>
       </div>
+
+      {/* Details are now shown on the dedicated page */}
     </div>
   )
 }

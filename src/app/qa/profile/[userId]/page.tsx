@@ -31,7 +31,7 @@ export default function UserProfilePage() {
   const [timeframe, setTimeframe] = useState<'week' | 'month' | 'all'>('all')
 
   const user = users.find(u => u.id === userId)
-  const userQuestions = questions.filter(q => q.author.id === userId)
+    const userQuestions = questions.filter(q => q.author && q.author.id === userId)
 
   if (!user) {
     return (

@@ -118,8 +118,8 @@ export default function QuestionDetailPage() {
     }
   }, [])
 
-  // Mock answers data
-  const mockAnswers: Answer[] = [
+  // Mock answers data (initial seed)
+  const initialAnswers: Answer[] = [
     {
       id: 'ans-1',
       questionId: question?.id || '',
@@ -262,6 +262,8 @@ Also, make sure to set up proper CSRF protection and secure cookies in productio
       comments: []
     }
   ]
+
+  const [answers, setAnswers] = useState<Answer[]>(initialAnswers)
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -797,7 +799,29 @@ Also, make sure to set up proper CSRF protection and secure cookies in productio
               <AnswerForm
                 question={question}
                 onSubmit={(data) => {
-                  console.log('Answer submitted:', data)
+                  const newAnswer: Answer = {
+                    id: `ans-${Date.now()}`,
+                    questionId: question.id,
+                    content: data.superAnswer || data.content || '',
+                    author: {
+                      id: currentUserId,
+                      name: 'You',
+                      email: 'you@example.com',
+                      avatar: '/images/avatars/default.jpg',
+                      reputation: 0,
+                      joinDate: new Date().toISOString(),
+                      isOnline: true,
+                      badges: []
+                    },
+                    votes: 0,
+                    isAccepted: false,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    comments: [],
+                    ...(data.poll ? { poll: data.poll } : {})
+                  }
+                  setAnswers(prev => [...prev, newAnswer])
+                  setQuestion(q => (q ? { ...q, answers: (q.answers || 0) + 1 } : q))
                   setShowAnswerForm(false)
                 }}
                 onCancel={() => setShowAnswerForm(false)}
@@ -810,7 +834,7 @@ Also, make sure to set up proper CSRF protection and secure cookies in productio
               {/* Answers Header */}
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900">
-                  {mockAnswers.length} Answer{mockAnswers.length !== 1 ? 's' : ''}
+                  {answers.length} Answer{answers.length !== 1 ? 's' : ''}
                 </h2>
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" size="sm" className="text-gray-600">
@@ -822,10 +846,9 @@ Also, make sure to set up proper CSRF protection and secure cookies in productio
 
               {/* Answers List */}
               <AnswerList
-                answers={mockAnswers.map((a, idx) => ({
+                answers={answers.map((a, idx) => ({
                   ...a,
-                  // Seed a default poll for the first answer to showcase Quick Polls
-                  ...(idx === 0
+                  ...(idx === 0 && !a.poll
                     ? {
                         poll: {
                           question: 'Which approach do you prefer for data fetching?',
