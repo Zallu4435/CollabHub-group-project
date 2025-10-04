@@ -240,6 +240,9 @@ const ProjectsLandingPage: React.FC = () => {
               onEdit={handleProjectEdit}
               onView={handleProjectView}
             />
+            <div className="mt-8 text-center">
+              <a href="/project/workspace/1" className="inline-block text-sm text-blue-600 hover:underline">Open Project 1 Workspace (demo)</a>
+            </div>
           </div>
         </div>
 

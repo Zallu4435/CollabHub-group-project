@@ -1,28 +1,73 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BlogTeam, BlogTeamMember, BlogTeamRole } from "../../types";
 import { getUserTeams, getTeamMembers, getUserRoleInTeam, canUserManageTeam } from "../../data";
+import { getLinkForTeam, unlinkByTeam, linkTeamToProject } from "../../utils/collabStore";
 import TeamMemberCard from "./TeamMemberCard";
 import InviteMemberModal from "./InviteMemberModal";
 import CreateTeamModal from "./CreateTeamModal";
+import { useSearchParams, useRouter } from "next/navigation";
 
 interface TeamsSectionProps {
   currentUserId: string;
+  initialTeamId?: string;
 }
 
-export default function TeamsSection({ currentUserId }: TeamsSectionProps) {
+export default function TeamsSection({ currentUserId, initialTeamId }: TeamsSectionProps) {
+  const search = useSearchParams();
+  const router = useRouter();
   const [selectedTeam, setSelectedTeam] = useState<BlogTeam | null>(null);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showCreateTeamForm, setShowCreateTeamForm] = useState(false);
   const [showSkipInInvite, setShowSkipInInvite] = useState(false);
   const [view, setView] = useState<'list' | 'details'>('list');
   const [searchQuery, setSearchQuery] = useState("");
+  const [linkProjectIdInput, setLinkProjectIdInput] = useState('');
+  const [linkVerified, setLinkVerified] = useState(false);
+  const [linkMessage, setLinkMessage] = useState<string | null>(null);
+  const [linkEmail, setLinkEmail] = useState('');
+  const [linkEmailSent, setLinkEmailSent] = useState(false);
+  const [linkEmailCode, setLinkEmailCode] = useState('');
+  const [linkExpectedCode, setLinkExpectedCode] = useState<string | null>(null);
+  const [linkEmailVerified, setLinkEmailVerified] = useState(false);
+  const [linkEmailMessage, setLinkEmailMessage] = useState<string | null>(null);
 
   const userTeams = getUserTeams(currentUserId);
+  const [userTeamsLocal, setUserTeamsLocal] = useState<BlogTeam[]>(userTeams);
+
+  // Keep local list in sync if data source changes
+  useEffect(() => {
+    setUserTeamsLocal(userTeams);
+  }, [currentUserId]);
+
+  // Open a specific team if provided
+  useEffect(() => {
+    if (!initialTeamId) return;
+    const team = userTeams.find(t => t.id === initialTeamId);
+    if (team) {
+      setSelectedTeam(team);
+      setView('details');
+    }
+  }, [initialTeamId]);
+
+  // If coming from project, open inline create-team with defaults
+  const fromProjectId = search.get('fromProject');
+  const projectTitle = search.get('projectTitle') || undefined;
+  const projectMembers = (search.get('projectMembers') || '').split('|').filter(Boolean);
+  const projectMemberEmails = (search.get('projectMemberEmails') || '').split('|').filter(Boolean);
+  useEffect(() => {
+    if (fromProjectId) {
+      setShowCreateTeamForm(true);
+      // Clean URL to avoid reopening if user navigates
+      const url = new URL(window.location.href);
+      url.searchParams.delete('fromProject');
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, [fromProjectId]);
 
   // Filter teams based on search query
-  const filteredTeams = userTeams.filter(team =>
+  const filteredTeams = userTeamsLocal.filter(team =>
     team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (team.description && team.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
@@ -44,7 +89,7 @@ export default function TeamsSection({ currentUserId }: TeamsSectionProps) {
     // In real app, call API to remove member
   };
 
-  const handleCreateTeam = (name: string, description: string, defaultRole: BlogTeamRole) => {
+  const handleCreateTeam = (name: string, description: string, defaultRole: BlogTeamRole, invites?: any) => {
     console.log('Creating team:', { name, description, defaultRole });
     // In real app, call API to create team
     // For demo, simulate team creation
@@ -64,11 +109,17 @@ export default function TeamsSection({ currentUserId }: TeamsSectionProps) {
       }
     };
     
+    // Persist link to project if arriving from project
+    if (fromProjectId) {
+      linkTeamToProject(newTeam.id, newTeam.name, fromProjectId, projectTitle);
+    }
+
     // In real app, you would update the teams list here
     console.log('Team created:', newTeam);
     
     // Close create team modal and open invite modal for the new team
     setShowCreateTeamForm(false);
+    setUserTeamsLocal(prev => [newTeam, ...prev]);
     setSelectedTeam(newTeam);
     setShowSkipInInvite(true); // Show skip button for newly created teams
     setShowInviteModal(true);
@@ -76,6 +127,7 @@ export default function TeamsSection({ currentUserId }: TeamsSectionProps) {
 
   // Show team details view
   if (view === 'details' && selectedTeam) {
+  const link = getLinkForTeam(selectedTeam.id);
   return (
     <div className="space-y-6">
         {/* Back button and header */}
@@ -111,6 +163,161 @@ export default function TeamsSection({ currentUserId }: TeamsSectionProps) {
                 Invite Member
               </button>
             )}
+          </div>
+
+          {/* Project Connection Panel */}
+          <div className="mb-6 border border-gray-200 rounded-xl p-4 bg-gray-50">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-sm font-medium text-gray-900">Project connection</div>
+                {link ? (
+                  <div className="text-xs text-gray-600 mt-1">Linked to project {link.projectTitle ? `“${link.projectTitle}”` : `#${link.projectId}`}</div>
+                ) : (
+                  <div className="text-xs text-gray-600 mt-1">No project linked</div>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                {link ? (
+                  <>
+                    <a href={`/project/workspace/${link.projectId}`} className="px-3 py-1.5 border border-gray-300 rounded text-sm hover:bg-white">Open Project</a>
+                    {canUserManageTeam(currentUserId, selectedTeam.id) && (
+                      <button
+                        onClick={() => {
+                          unlinkByTeam(selectedTeam.id);
+                          setView('details');
+                        }}
+                        className="px-3 py-1.5 border border-red-300 text-red-600 rounded text-sm hover:bg-red-50"
+                      >
+                        Unlink
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <div className="w-full flex flex-col gap-3">
+                    <div className="flex-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Project ID</label>
+                      <input
+                        value={linkProjectIdInput}
+                        onChange={(e) => { setLinkProjectIdInput(e.target.value); setLinkVerified(false); setLinkMessage(null); }}
+                        placeholder="e.g., 1"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
+                      />
+                      {linkMessage && (
+                        <div className={`mt-1 text-xs ${linkVerified ? 'text-green-700' : 'text-red-600'}`}>{linkMessage}</div>
+                      )}
+                    </div>
+                    {canUserManageTeam(currentUserId, selectedTeam.id) && (
+                      <div className="flex flex-wrap items-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const pid = linkProjectIdInput.trim();
+                            if (!pid) {
+                              setLinkVerified(false);
+                              setLinkMessage('Enter a valid Project ID');
+                              return;
+                            }
+                            setLinkVerified(true);
+                            setLinkMessage('Project ID verified');
+                          }}
+                          className="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white hover:bg-gray-50"
+                        >
+                          Verify Project ID
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Email verification */}
+                    <div className="flex-1">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Owner/Admin Email Verification</label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="email"
+                          value={linkEmail}
+                          onChange={(e) => { setLinkEmail(e.target.value); setLinkEmailVerified(false); setLinkEmailMessage(null); }}
+                          placeholder="you@company.com"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
+                        />
+                        {!linkEmailSent ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const valid = /.+@.+\..+/.test(linkEmail);
+                              if (!valid) {
+                                setLinkEmailMessage('Enter a valid email');
+                                return;
+                              }
+                              const code = Math.floor(100000 + Math.random() * 900000).toString();
+                              setLinkExpectedCode(code);
+                              setLinkEmailSent(true);
+                              setLinkEmailMessage(`Verification code sent (demo): ${code}`);
+                            }}
+                            className="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white hover:bg-gray-50"
+                          >
+                            Send Code
+                          </button>
+                        ) : (
+                          <>
+                            <input
+                              value={linkEmailCode}
+                              onChange={(e) => setLinkEmailCode(e.target.value)}
+                              placeholder="Enter code"
+                              className="w-32 px-3 py-2 border border-gray-300 rounded-md text-sm bg-white"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (linkExpectedCode && linkEmailCode.trim() === linkExpectedCode) {
+                                  setLinkEmailVerified(true);
+                                  setLinkEmailMessage('Email verified');
+                                } else {
+                                  setLinkEmailVerified(false);
+                                  setLinkEmailMessage('Invalid code');
+                                }
+                              }}
+                              className="px-3 py-2 border border-gray-300 rounded-md text-sm bg-white hover:bg-gray-50"
+                            >
+                              Verify Code
+                            </button>
+                          </>
+                        )}
+                      </div>
+                      {linkEmailMessage && (
+                        <div className={`mt-1 text-xs ${linkEmailVerified ? 'text-green-700' : 'text-gray-600'}`}>{linkEmailMessage}</div>
+                      )}
+                    </div>
+
+                    {canUserManageTeam(currentUserId, selectedTeam.id) && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          disabled={!linkVerified || !linkEmailVerified}
+                          onClick={() => {
+                            const pid = linkProjectIdInput.trim();
+                            if (!linkVerified || !linkEmailVerified || !pid) return;
+                            linkTeamToProject(selectedTeam.id, selectedTeam.name, pid);
+                            // reset states
+                            setLinkMessage(null);
+                            setLinkVerified(false);
+                            setLinkProjectIdInput('');
+                            setLinkEmail('');
+                            setLinkEmailSent(false);
+                            setLinkExpectedCode(null);
+                            setLinkEmailCode('');
+                            setLinkEmailVerified(false);
+                            setLinkEmailMessage(null);
+                            setView('details');
+                          }}
+                          className={`px-3 py-2 rounded-md text-sm ${linkVerified && linkEmailVerified ? 'bg-black text-white hover:bg-gray-800' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
+                        >
+                          Link
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Team Members */}
@@ -221,6 +428,7 @@ export default function TeamsSection({ currentUserId }: TeamsSectionProps) {
           <div className="w-full space-y-4">
             {filteredTeams.map((team) => {
             const userRole = getUserRoleInTeam(currentUserId, team.id);
+            const link = getLinkForTeam(team.id);
             return (
               <div
                 key={team.id}
@@ -257,6 +465,11 @@ export default function TeamsSection({ currentUserId }: TeamsSectionProps) {
                     }`}>
                       {userRole?.role}
                     </span>
+                    {link && (
+                      <span className="px-2 py-0.5 text-xs rounded-full bg-amber-100 text-amber-800">
+                        Linked: {link.projectTitle ? `“${link.projectTitle}”` : `#${link.projectId}`}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -366,6 +579,11 @@ export default function TeamsSection({ currentUserId }: TeamsSectionProps) {
         isOpen={showCreateTeamForm}
         onClose={() => setShowCreateTeamForm(false)}
         onCreate={handleCreateTeam}
+        defaultName={projectTitle ? `${projectTitle} Team` : undefined}
+        defaultDescription={fromProjectId ? `Collaboration team for project ${projectTitle ? `“${projectTitle}”` : `#${fromProjectId}`}.` : undefined}
+        contextNote={fromProjectId ? `Pre-select from project members below or invite more.` : undefined}
+        projectMemberNames={projectMembers}
+        projectMemberEmails={projectMemberEmails}
       />
     </div>
   );

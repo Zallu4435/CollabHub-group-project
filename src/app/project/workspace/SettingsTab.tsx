@@ -4,6 +4,7 @@ import React, { useMemo, useState } from 'react';
 import { Project, ProjectAccessSettings } from '../types';
 import { Button } from '../components/Button';
 import { usePermissions } from './PermissionsContext';
+import BlogCollabCta from './BlogCollabCta';
 
 interface SettingsTabProps {
   project: Project;
@@ -115,6 +116,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ project, currentUserRo
 
   const sectionDefs: Array<{ id: 'general' | 'github' | 'integrations' | 'webhooks' | 'notifications' | 'api-tokens' | 'payments' | 'access' | 'project-access' | 'code-workspace' | 'automation' | 'compliance'; label: string }> = [
     { id: 'general', label: 'General' },
+    // Inject a lightweight Blog Collaboration entry under General via a card, not a nav item
     { id: 'github', label: 'GitHub' },
     { id: 'integrations', label: 'Integrations' },
     { id: 'webhooks', label: 'Webhooks' },
@@ -281,6 +283,10 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ project, currentUserRo
           </div>
         </div>
             </SectionCard>
+      {/* Blog Collaboration */}
+      <SectionCard title="Blog Collaboration" description="Enable team blogging for this project and manage the linked team.">
+        <BlogCollabCta projectId={project.id} projectTitle={project.title} canManage={canManageProject} />
+      </SectionCard>
           </div>
           )}
 

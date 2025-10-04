@@ -1,0 +1,206 @@
+openapi: 3.0.0
+info:
+  title: My App Auth API (Mock)
+  version: 1.0.0
+  description: |
+    Mock authentication API for login, logout, and token refresh.
+    Use the provided examples to test via Swagger UI against the mock server.
+
+servers:
+  - url: https://mockapi.example.com
+    description: Mock Server
+  - url: http://localhost:3000
+    description: Local Next.js dev server
+
+tags:
+  - name: Auth
+    description: Authentication endpoints
+
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login with email and password
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              email: demo@example.com
+              password: password123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              example:
+                accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mocked.access
+                refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mocked.refresh
+                tokenType: Bearer
+                expiresIn: 900
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: VALIDATION_ERROR
+                message: Email and password are required
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: INVALID_CREDENTIALS
+                message: Invalid email or password
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout current session
+      operationId: logout
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                required: [success, message]
+              example:
+                success: true
+                message: Logged out successfully
+        '401':
+          description: Missing or invalid Authorization header
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: UNAUTHORIZED
+                message: Authorization token missing or invalid
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      operationId: refresh
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+            example:
+              refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mocked.refresh
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshResponse'
+              example:
+                accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mocked.newaccess
+                tokenType: Bearer
+                expiresIn: 900
+        '400':
+          description: Missing or invalid refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: INVALID_REFRESH_TOKEN
+                message: Refresh token is missing or invalid
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: demo@example.com
+        password:
+          type: string
+          format: password
+          example: password123
+      required: [email, password]
+
+    LoginResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: Mocked JWT access token
+        refreshToken:
+          type: string
+          description: Mocked JWT refresh token
+        tokenType:
+          type: string
+          example: Bearer
+        expiresIn:
+          type: integer
+          format: int32
+          description: Access token expiry in seconds
+          example: 900
+      required: [accessToken, refreshToken, tokenType, expiresIn]
+
+    RefreshRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          description: The refresh token issued during login
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mocked.refresh
+      required: [refreshToken]
+
+    RefreshResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: New mocked JWT access token
+        tokenType:
+          type: string
+          example: Bearer
+        expiresIn:
+          type: integer
+          format: int32
+          description: Access token expiry in seconds
+          example: 900
+      required: [accessToken, tokenType, expiresIn]
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      required: [code, message]
+
+

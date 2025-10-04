@@ -1,0 +1,51 @@
+openapi: 3.1.0
+info:
+  title: Main API
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:4010
+
+paths:
+  /auth/login:
+    $ref: "./auth.paths.yaml#/paths/~1auth~1login"
+  /auth/session/select-project:
+    $ref: "./auth.paths.yaml#/paths/~1auth~1session~1select-project"
+  /auth/token/exchange:
+    $ref: "./auth.paths.yaml#/paths/~1auth~1token~1exchange"
+  /auth/revoke:
+    $ref: "./auth.paths.yaml#/paths/~1auth~1revoke"
+  /authz/allow:
+    $ref: "./authz.paths.yaml#/paths/~1authz~1allow"
+  /authz/project/check:
+    $ref: "./authz.paths.yaml#/paths/~1authz~1project~1check"
+  /projects/{projectId}/me/permissions:
+    $ref: "./authz.paths.yaml#/paths/~1projects~1{projectId}~1me~1permissions"
+  /permissions:
+    $ref: "./authz.paths.yaml#/paths/~1permissions"
+  /projects:
+    $ref: "./project.paths.yaml#/paths/~1projects"
+  /projects/{projectId}:
+    $ref: "./project.paths.yaml#/paths/~1projects~1{projectId}"
+
+components:
+  schemas:
+    LoginRequest:
+      $ref: "./auth.paths.yaml#/components/schemas/LoginRequest"
+    TokenResponse:
+      $ref: "./auth.paths.yaml#/components/schemas/TokenResponse"
+    TokenExchangeRequest:
+      $ref: "./auth.paths.yaml#/components/schemas/TokenExchangeRequest"
+    RevokeRequest:
+      $ref: "./auth.paths.yaml#/components/schemas/RevokeRequest"
+    AllowRequest:
+      $ref: "./authz.paths.yaml#/components/schemas/AllowRequest"
+    AllowResponse:
+      $ref: "./authz.paths.yaml#/components/schemas/AllowResponse"
+    Project:
+      $ref: "./project.paths.yaml#/components/schemas/Project"
+    ProjectSettings:
+      $ref: "./project.paths.yaml#/components/schemas/ProjectSettings"
+    UpdateProjectSettingsRequest:
+      $ref: "./project.paths.yaml#/components/schemas/UpdateProjectSettingsRequest"
+
+

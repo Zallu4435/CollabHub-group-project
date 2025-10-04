@@ -1,0 +1,102 @@
+openapi: 3.1.0
+info:
+  title: Project (Subfile)
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:4010
+
+components:
+  schemas:
+    Project:
+      type: object
+      properties:
+        id: { type: string, example: proj_B }
+        name: { type: string, example: "Project B" }
+        description: { type: string, nullable: true, example: "Demo project" }
+      required: [id, name]
+
+    ProjectSettings:
+      type: object
+      properties:
+        theme: { type: string, example: "dark" }
+        notifications: { type: boolean, example: true }
+
+    UpdateProjectSettingsRequest:
+      type: object
+      properties:
+        theme: { type: string, example: "dark" }
+        notifications: { type: boolean, example: true }
+
+paths:
+  /projects:
+    get:
+      summary: List projects visible to the current user
+      description: Project service filters using Authorization at query-time to include only accessible projects.
+      responses:
+        "200":
+          description: Visible projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+              examples:
+                default:
+                  value:
+                    - { id: "proj_A", name: "Project A" }
+                    - { id: "proj_B", name: "Project B" }
+
+  /projects/{projectId}:
+    get:
+      summary: Get project details
+      description: Backend enforces Authorization allow(userId, projectId, "project.read"). Returns 403 on deny.
+      parameters:
+        - in: path
+          name: projectId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+              examples:
+                default:
+                  value: { id: "proj_B", name: "Project B", description: "Demo project" }
+        "403":
+          description: Forbidden
+
+    patch:
+      summary: Update project settings
+      description: Backend enforces Authorization allow(userId, projectId, "project.settings:update"). Returns 403 on deny.
+      parameters:
+        - in: path
+          name: projectId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProjectSettingsRequest"
+            examples:
+              default:
+                value: { theme: "dark", notifications: true }
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectSettings"
+              examples:
+                default:
+                  value: { theme: "dark", notifications: true }
+        "403":
+          description: Forbidden
+
+

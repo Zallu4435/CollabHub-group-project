@@ -1,0 +1,174 @@
+openapi: 3.1.0
+info:
+  title: Auth (Subfile) - Project chosen after login
+  version: 1.1.0
+servers:
+  - url: http://127.0.0.1:4010
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email, example: alice@example.com }
+        password: { type: string, format: password, example: S3cret! }
+
+    TokenResponse:
+      type: object
+      properties:
+        access_token: { type: string }
+        expires_in: { type: integer, example: 900 }
+        token_type: { type: string, example: Bearer }
+        scope: { type: string, example: "proj:read proj:write" }
+        id_token: { type: string, nullable: true }
+
+    SelectProjectRequest:
+      type: object
+      required: [projectId]
+      properties:
+        projectId: { type: string, example: proj_B }
+        scope:
+          type: string
+          nullable: true
+          example: "proj:read proj:write"
+
+    TokenExchangeRequest:
+      type: object
+      required: [grant_type, subject_token, subject_token_type, requested_token_type]
+      properties:
+        grant_type:
+          type: string
+          enum: ["urn:ietf:params:oauth:grant-type:token-exchange"]
+          example: "urn:ietf:params:oauth:grant-type:token-exchange"
+        subject_token: { type: string, example: "ey.mock.superadmin" }
+        subject_token_type:
+          type: string
+          enum: ["urn:ietf:params:oauth:token-type:access_token"]
+          example: "urn:ietf:params:oauth:token-type:access_token"
+        requested_subject:
+          type: string
+          nullable: true
+          example: "user_alice"
+        audience:
+          type: string
+          example: "user"
+        requested_token_type:
+          type: string
+          enum: ["urn:ietf:params:oauth:token-type:access_token"]
+          example: "urn:ietf:params:oauth:token-type:access_token"
+
+    RevokeRequest:
+      type: object
+      required: [token]
+      properties:
+        token: { type: string, example: "ey.mock.any" }
+
+paths:
+  /auth/login:
+    post:
+      summary: Login (email + password only)
+      description: Returns an access token. Project is chosen later per project.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+              examples:
+                user:
+                  value:
+                    access_token: "ey.mock.user.alice"
+                    expires_in: 900
+                    token_type: "Bearer"
+                    scope: "proj:read proj:write"
+                platform_admin:
+                  value:
+                    access_token: "ey.mock.platform-admin.bob"
+                    expires_in: 900
+                    token_type: "Bearer"
+                    scope: "admin:read admin:write"
+                superadmin:
+                  value:
+                    access_token: "ey.mock.superadmin.bob"
+                    expires_in: 900
+                    token_type: "Bearer"
+                    scope: "root:all"
+
+  /auth/session/select-project:
+    post:
+      summary: Select a project after login (downscope to project)
+      description: Exchange current token for a project-scoped token to operate within a specific project.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SelectProjectRequest"
+      responses:
+        "200":
+          description: Project-scoped token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+              examples:
+                proj_B:
+                  value:
+                    access_token: "ey.mock.user.alice.proj_B"
+                    expires_in: 900
+                    token_type: "Bearer"
+                    scope: "proj:read proj:write"
+
+  /auth/token/exchange:
+    post:
+      summary: Mock token exchange / impersonation or portal switch
+      description: Request a token for another subject (impersonation) or a different audience; project is still chosen via /auth/session/select-project.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TokenExchangeRequest"
+      responses:
+        "200":
+          description: New token issued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+              examples:
+                impersonate_user:
+                  value:
+                    access_token: "ey.mock.user.alice.act.superadmin_bob"
+                    expires_in: 900
+                    token_type: "Bearer"
+                    scope: "proj:read proj:write"
+                switch_to_admin_portal:
+                  value:
+                    access_token: "ey.mock.platform-admin.bob"
+                    expires_in: 900
+                    token_type: "Bearer"
+                    scope: "admin:read"
+
+  /auth/revoke:
+    post:
+      summary: Revoke a token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RevokeRequest"
+      responses:
+        "200":
+          description: Revoked
+        "400":
+          description: Invalid token

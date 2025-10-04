@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import BlogHeader from "../components/BlogHeader";
 import { useBlogsData } from "../hook/useBlogsData";
 import { useBlogFilters } from "../hook/useBlogFilters";
@@ -22,6 +23,8 @@ import PreferencesSection from "./components/PreferencesSection";
 type TabKey = "overview" | "posts" | "likes" | "archives" | "followers" | "following" | "collaborations" | "preferences";
 
 export default function BlogSettingsPage() {
+  const search = useSearchParams();
+  const router = useRouter();
   const [tab, setTab] = useState<TabKey>("overview");
   const { posts, setFilters, filters } = useBlogsData({ sortBy: "newest" });
   const { setQuery, setTag, setReadingTime, setBlogType, setStatus, setSortBy } = useBlogFilters(setFilters);
@@ -62,6 +65,13 @@ export default function BlogSettingsPage() {
     { key: "preferences" as TabKey, label: "Preferences", icon: Settings },
   ];
 
+  const initialTeamId = search.get('teamId') || undefined;
+  const requestedTab = (search.get('tab') as TabKey | null) || null;
+
+  useEffect(() => {
+    if (requestedTab && requestedTab !== tab) setTab(requestedTab);
+  }, [requestedTab]);
+
   const renderTabContent = () => {
     switch (tab) {
       case "overview":
@@ -84,7 +94,7 @@ export default function BlogSettingsPage() {
       case "following":
         return <FollowingSection />;
       case "collaborations":
-        return <TeamsSection currentUserId={currentUserId} />;
+        return <TeamsSection currentUserId={currentUserId} initialTeamId={initialTeamId} />;
       case "preferences":
         return (
           <PreferencesSection

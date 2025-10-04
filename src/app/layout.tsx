@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import FloatingNavigation from "@/components/FloatingNavigation";
 import FloatingChatBot from "@/components/FloatingChatBot";
+import FeedbackModal from "@/components/FeedbackModal";
+import FloatingHelp from "@/components/FloatingHelp";
+import AnnouncementBanner from "@/components/AnnouncementBanner";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 
 const geistSans = Geist({
@@ -31,9 +34,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <CurrencyProvider>
+          <AnnouncementBanner />
           {children}
           <FloatingNavigation />
           <FloatingChatBot />
+          <FloatingHelp />
+          <FeedbackModal />
         </CurrencyProvider>
       </body>
     </html>

@@ -1,0 +1,124 @@
+openapi: 3.1.0
+info:
+  title: AuthZ (Subfile) - Project checks and permissions
+  version: 1.2.0
+servers:
+  - url: http://127.0.0.1:4010
+
+components:
+  schemas:
+    AllowRequest:
+      type: object
+      required: [userId, projectId, action]
+      properties:
+        userId: { type: string, example: "user_alice" }
+        projectId: { type: string, example: "proj_B" }
+        action: { type: string, example: "read" }
+
+    AllowResponse:
+      type: object
+      properties:
+        allow: { type: boolean, example: true }
+        reason: { type: string, example: "mock-allow: Editor can edit blog.post" }
+        actor: { type: string, example: "superadmin_bob" }
+        obligations:
+          type: array
+          items: { type: string }
+          example: ["mask:email"]
+
+paths:
+  /authz/allow:
+    post:
+      summary: Project authorization check
+      description: Returns whether the user is authorized for the requested action within the specified project.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AllowRequest"
+      responses:
+        "200":
+          description: Decision
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AllowResponse"
+              examples:
+                allow:
+                  value:
+                    allow: true
+                    reason: "mock-allow: User has read access to project"
+                    actor: "authz_service"
+                deny:
+                  value:
+                    allow: false
+                    reason: "mock-deny: User lacks required role in project"
+                    actor: "authz_service"
+
+  /authz/project/check:
+    post:
+      summary: Check membership and current role for project
+      description: Confirms that the user belongs to the selected project and returns the current role name.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AllowRequest"
+      responses:
+        "200":
+          description: Project membership and role
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  allow: { type: boolean }
+                  role: { type: string, example: "Editor" }
+              examples:
+                member_editor:
+                  value: { allow: true, role: "Editor" }
+                non_member:
+                  value: { allow: false, role: null }
+
+  /projects/{projectId}/me/permissions:
+    get:
+      summary: Effective permissions for current user in project
+      description: Returns the flattened permission list for the current user's role; for UI hints only.
+      parameters:
+        - in: path
+          name: projectId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Permission list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { type: string }
+              examples:
+                editor:
+                  value: ["project.read", "project.settings:update"]
+
+  /permissions:
+    get:
+      summary: Global permission catalog
+      description: Stable catalog of permissions used to compose roles; not project-specific.
+      responses:
+        "200":
+          description: Permission catalog
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { type: string }
+              examples:
+                default:
+                  value: [
+                    "project.read",
+                    "project.write",
+                    "project.settings:update"
+                  ]
