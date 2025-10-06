@@ -1,0 +1,11 @@
+"use client"
+
+import SecuritySettings from '../components/SecuritySettings'
+
+export default function SecurityPage() {
+  return (
+    <SecuritySettings />
+  )
+}
+
+
