@@ -140,7 +140,10 @@ export default function TaskOversight() {
     return matchesSearch && matchesStatus && matchesPriority && matchesProject;
   });
 
-  const projects = Array.from(new Set(tasks.map(t => ({ id: t.projectId, name: t.projectName }))));
+  // Remove duplicate project ids from the projects array
+  const projects = Array.from(
+    new Map(tasks.map(t => [t.projectId, { id: t.projectId, name: t.projectName }])).values()
+  );
 
   const handleApprove = (taskId: string) => {
     setTasks(tasks.map(t => 

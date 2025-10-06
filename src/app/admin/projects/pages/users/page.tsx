@@ -1,5 +1,5 @@
-import UserTeamAdmin from '../../components/UserTeamAdmin';
+import AdvancedUserManagement from '../../components/AdvancedUserManagement';
 
 export default function UsersPage() {
-  return <UserTeamAdmin />;
+  return <AdvancedUserManagement />;
 }

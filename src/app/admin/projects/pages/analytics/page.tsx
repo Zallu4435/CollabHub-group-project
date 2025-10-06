@@ -1,5 +1,5 @@
-import AnalyticsInsights from '../../components/AnalyticsInsights';
+import AdvancedAnalytics from '../../components/AdvancedAnalytics';
 
 export default function AnalyticsPage() {
-  return <AnalyticsInsights />;
+  return <AdvancedAnalytics />;
 }

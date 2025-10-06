@@ -22,7 +22,9 @@ import {
   FiTrendingUp,
   FiMonitor,
   FiTool,
-  FiBell
+  FiBell,
+  FiDollarSign,
+  FiCheckCircle
 } from 'react-icons/fi';
 
 interface ProjectAdminSidebarProps {
@@ -62,6 +64,14 @@ const ProjectAdminSidebar: React.FC<ProjectAdminSidebarProps> = ({ sidebarCollap
       category: 'Project Management'
     },
     {
+      id: 'moderation',
+      title: 'Project Moderation',
+      icon: <FiCheckCircle size={20} />,
+      description: 'Review and approve project submissions',
+      path: '/admin/projects/pages/moderation',
+      category: 'Project Management'
+    },
+    {
       id: 'tasks',
       title: 'Tasks & Workflows',
       icon: <FiCheckSquare size={20} />,
@@ -76,6 +86,14 @@ const ProjectAdminSidebar: React.FC<ProjectAdminSidebarProps> = ({ sidebarCollap
       description: 'User management and team administration',
       path: '/admin/projects/pages/users',
       category: 'Team & Users'
+    },
+    {
+      id: 'content',
+      title: 'Content Management',
+      icon: <FiFileText size={20} />,
+      description: 'Advanced file management and storage',
+      path: '/admin/projects/pages/content',
+      category: 'Content & Files'
     },
     {
       id: 'files',
@@ -155,6 +173,22 @@ const ProjectAdminSidebar: React.FC<ProjectAdminSidebarProps> = ({ sidebarCollap
       icon: <FiBell size={20} />,
       description: 'Notification management and settings',
       path: '/admin/projects/pages/notifications',
+      category: 'System & Security'
+    },
+    {
+      id: 'marketing',
+      title: 'Marketing Tools',
+      icon: <FiTrendingUp size={20} />,
+      description: 'Promote projects and manage campaigns',
+      path: '/admin/projects/pages/marketing',
+      category: 'System & Security'
+    },
+    {
+      id: 'financial',
+      title: 'Financial Management',
+      icon: <FiDollarSign size={20} />,
+      description: 'Revenue tracking, billing, and payments',
+      path: '/admin/projects/pages/financial',
       category: 'System & Security'
     },
     {

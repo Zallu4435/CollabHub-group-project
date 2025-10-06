@@ -1,16 +1,10 @@
-"use client"
+import MarketplaceDashboard from "./components/MarketplaceDashboard";
 
-import React from 'react';
+export default function MarketplaceAdminPage() {
+  return <MarketplaceDashboard />;
+}
 
-const MarketplaceAdminPage: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="p-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Marketplace Platform Admin</h1>
-        <p className="text-gray-600">Marketplace administration dashboard - coming soon</p>
-      </div>
-    </div>
-  );
+export const metadata = {
+  title: 'Marketplace Dashboard | Admin',
+  description: 'Complete overview of marketplace performance and metrics',
 };
-
-export default MarketplaceAdminPage;
