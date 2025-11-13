@@ -54,6 +54,21 @@ const FloatingHelp: React.FC = () => {
         </div>
 
         <div className="p-3 grid grid-cols-1 gap-2 bg-white">
+          <form
+            action={(formData) => {
+              const q = String(formData.get('q') || '').trim();
+              if (typeof window !== 'undefined') {
+                const url = q ? `/help?q=${encodeURIComponent(q)}` : '/help';
+                window.location.href = url;
+              }
+            }}
+            className="flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200"
+          >
+            <span className="text-lg">🔎</span>
+            <input name="q" placeholder="Search help..." className="flex-1 outline-none text-sm" />
+            <button type="submit" className="text-xs text-indigo-600">Go</button>
+          </form>
+
           <button
             onClick={triggerFeedback}
             className="flex items-center gap-3 px-3 py-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition"
