@@ -156,6 +156,16 @@ const CommunityPlatformPage: React.FC = () => {
                 iconBgOpacity: 'bg-opacity-50',
                 iconTextColor: 'text-gray-800',
               },
+              {
+                icon: '🎥',
+                title: 'Collab Hub',
+                subtitle: 'Live Sessions',
+                description:
+                  'Join room-based live sessions with voice/video UI simulation, reactions, chat, and more — now available as a shared experience.',
+                href: '/collab',
+                bgGradient: 'from-violet-500 to-fuchsia-500',
+                textColor: 'text-violet-100',
+              },
             ].map(
               ({
                 icon,
@@ -419,6 +429,7 @@ const CommunityPlatformPage: React.FC = () => {
                   { label: 'Posts', href: '/posts' },
                   { label: 'Q&A', href: '/qa' },
                   { label: 'Community', href: '/community' },
+                  { label: 'Collab Hub', href: '/collab' },
                 ].map(({ label, href }) => (
                   <li key={label}>
                     <a href={href} className="hover:text-white transition">
