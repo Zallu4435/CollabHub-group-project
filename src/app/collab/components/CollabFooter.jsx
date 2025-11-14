@@ -16,6 +16,7 @@ export default function CollabFooter() {
         <div>
           <div className="font-semibold mb-3">Explore</div>
           <ul className="space-y-2 text-gray-300 text-sm">
+            <li><a href="/collab/sessions" className="hover:text-white">Live Sessions</a></li>
             <li><a href="/collab/quizzes" className="hover:text-white">Quizzes</a></li>
             <li><a href="/collab/calendar" className="hover:text-white">Calendar</a></li>
             <li><a href="/collab/omega" className="hover:text-white">Omega</a></li>

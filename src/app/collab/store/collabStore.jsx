@@ -78,6 +78,7 @@ const initialState = {
   omega: { current: null, history: [] }, // { current: { match, startedAt, endsAt, roomId }, history: [...] }
   calendar: { events: [] }, // [{ id, type, title, startsAt, endsAt, meta }
   scheduling: { polls: [] }, // [{ id, title, description, options:[{id,label,votes:[] }], ranked, closesAt, status, createdBy, votes: {} }]
+  liveSessions: [], // [{ id, title, host, description, roomId, status, startedAt, participants, maxParticipants, isPublic, tags }]
 };
 
 function reducer(state, action) {
@@ -465,6 +466,22 @@ function reducer(state, action) {
       const polls = (state.scheduling?.polls || []).map(p => p.id === action.pollId ? { ...p, status: 'closed' } : p);
       return { ...state, scheduling: { polls } };
     }
+    // Live Sessions
+    case 'LS_LOAD': {
+      return { ...state, liveSessions: action.sessions || [] };
+    }
+    case 'LS_CREATE': {
+      const sessions = [...(state.liveSessions || []), action.session];
+      return { ...state, liveSessions: sessions };
+    }
+    case 'LS_UPDATE': {
+      const sessions = (state.liveSessions || []).map(s => s.id === action.sessionId ? { ...s, ...action.updates } : s);
+      return { ...state, liveSessions: sessions };
+    }
+    case 'LS_DELETE': {
+      const sessions = (state.liveSessions || []).filter(s => s.id !== action.sessionId);
+      return { ...state, liveSessions: sessions };
+    }
     default:
       return state;
   }
@@ -702,4 +719,15 @@ export function useQuiz(roomId, user) {
   const score = (userId, correct) => dispatch({ type: 'QUIZ_SCORE', roomId, userId, correct });
   const next = () => dispatch({ type: 'QUIZ_NEXT', roomId });
   return { ...qz, start, answer, score, next, loadBank };
+}
+
+// Live Sessions hook
+export function useLiveSessions(user) {
+  const { state, dispatch } = useCollab();
+  const sessions = state.liveSessions || [];
+  const loadSessions = React.useCallback((sessions) => dispatch({ type: 'LS_LOAD', sessions }), [dispatch]);
+  const createSession = React.useCallback((session) => dispatch({ type: 'LS_CREATE', session: { ...session, id: `session-${Date.now()}`, host: user, startedAt: Date.now(), participants: 0 } }), [dispatch, user]);
+  const updateSession = React.useCallback((sessionId, updates) => dispatch({ type: 'LS_UPDATE', sessionId, updates }), [dispatch]);
+  const deleteSession = React.useCallback((sessionId) => dispatch({ type: 'LS_DELETE', sessionId }), [dispatch]);
+  return { sessions, loadSessions, createSession, updateSession, deleteSession };
 }
