@@ -7,9 +7,9 @@ export const QUIZ_SESSIONS = [
     id: 's1',
     title: 'Frontend Basics Sprint',
     roomId: 'project:123:standup',
-    startAt: now + 15 * 60 * 1000, // starts in 15m
-    enrollmentOpenAt: now + 1 * 60 * 1000, // opens in 1m
-    enrollmentCloseAt: now + 12 * 60 * 1000, // closes 3m before start
+    startAt: now + 2 * 60 * 1000, // starts in ~2m
+    enrollmentOpenAt: now - 60 * 1000, // open now
+    enrollmentCloseAt: now + 90 * 1000, // closes ~30s before start
     capacity: 5,
     enrolledIds: [],
     waitlistIds: [],
@@ -19,9 +19,9 @@ export const QUIZ_SESSIONS = [
     id: 's2',
     title: 'JS Trivia Marathon',
     roomId: 'community:42:quiz',
-    startAt: now + 45 * 60 * 1000,
-    enrollmentOpenAt: now + 5 * 60 * 1000,
-    enrollmentCloseAt: now + 40 * 60 * 1000,
+    startAt: now + 6 * 60 * 1000, // starts in ~6m
+    enrollmentOpenAt: now - 60 * 1000, // open now
+    enrollmentCloseAt: now + 5 * 60 * 1000, // closes ~1m before start
     capacity: 10,
     enrolledIds: [],
     waitlistIds: [],
