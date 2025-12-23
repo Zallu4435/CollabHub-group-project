@@ -2,32 +2,57 @@
 
 import React, { useState } from 'react';
 import { useOrganization } from '../lib/store';
+import {
+  Download,
+  Filter,
+  Users,
+  BookOpen,
+  Building2,
+  Target,
+  DollarSign,
+  CheckCircle,
+  BarChart3,
+  Award,
+  Calendar,
+  Clock,
+  TrendingUp,
+  Package,
+  FileText,
+  Play,
+  Pause,
+  MoreVertical,
+  Loader,
+  X,
+  RefreshCw
+} from 'lucide-react';
 
-function ReportCard({ title, description, icon, reportType, onExport, filters = {} }) {
+function ReportCard({ title, description, icon: Icon, reportType, onExport, filters = {} }) {
   const [isExporting, setIsExporting] = useState(false);
-  
+
   const handleExport = async () => {
     setIsExporting(true);
     await onExport(reportType, filters);
-    setIsExporting(false);
+    setTimeout(() => setIsExporting(false), 2000);
   };
-  
+
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between">
+    <div className="group bg-white border-2 border-gray-200 rounded-2xl p-6 hover:border-blue-300 hover:shadow-xl transition-all">
+      <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-2xl">{icon}</span>
-            <h3 className="font-semibold text-gray-900">{title}</h3>
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
+              <Icon className="w-6 h-6 text-blue-600" />
+            </div>
+            <h3 className="font-bold text-gray-900 text-lg">{title}</h3>
           </div>
-          <p className="text-sm text-gray-600 mb-4">{description}</p>
-          
+          <p className="text-sm text-gray-600 leading-relaxed mb-4">{description}</p>
+
           {Object.keys(filters).length > 0 && (
             <div className="mb-4">
-              <div className="text-xs text-gray-500 mb-1">Current filters:</div>
-              <div className="flex flex-wrap gap-1">
+              <div className="text-xs font-bold text-gray-700 mb-2">{title}:</div>
+              <div className="flex flex-wrap gap-2">
                 {Object.entries(filters).map(([key, value]) => (
-                  <span key={key} className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">
+                  <span key={key} className="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-semibold border border-blue-200">
                     {key}: {value}
                   </span>
                 ))}
@@ -36,20 +61,21 @@ function ReportCard({ title, description, icon, reportType, onExport, filters = 
           )}
         </div>
       </div>
-      
+
       <button
         onClick={handleExport}
         disabled={isExporting}
-        className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-lg"
       >
         {isExporting ? (
           <>
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-            Exporting...
+            <Loader className="w-5 h-5 animate-spin" />
+            {title}
           </>
         ) : (
           <>
-            📊 Export Report
+            <Download className="w-5 h-5" />
+            {description}
           </>
         )}
       </button>
@@ -61,62 +87,76 @@ function FilterPanel({ filters, onFiltersChange }) {
   const departments = ['All', 'Engineering', 'Design', 'Data', 'Marketing'];
   const timeRanges = ['Last 30 days', 'Last 3 months', 'Last 6 months', 'Last year', 'All time'];
   const statuses = ['All', 'Active', 'Completed', 'At Risk', 'Dropped'];
-  
+
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6">
-      <h3 className="font-medium text-gray-900 mb-4">Report Filters</h3>
-      
-      <div className="grid md:grid-cols-3 gap-4">
+    <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 shadow-md">
+      <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2 text-lg">
+        <Filter className="w-5 h-5 text-blue-600" />
+        {filters.department || 'Report Filters'}
+      </h3>
+
+      <div className="grid md:grid-cols-3 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Department</label>
+          <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-3">
+            <Building2 className="w-4 h-4 text-blue-600" />
+            {filters.department || 'Department'}
+          </label>
           <select
             value={filters.department || 'All'}
             onChange={(e) => onFiltersChange({ ...filters, department: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            {departments.map(dept => (
-              <option key={dept} value={dept}>{dept}</option>
+            {departments.map((dept) => (
+              <option key={dept} value={dept}>
+                {dept}
+              </option>
             ))}
           </select>
         </div>
-        
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Time Range</label>
+          <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-3">
+            <Calendar className="w-4 h-4 text-purple-600" />
+            {filters.timeRange || 'Time Range'}
+          </label>
           <select
             value={filters.timeRange || 'Last 3 months'}
             onChange={(e) => onFiltersChange({ ...filters, timeRange: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500"
           >
-            {timeRanges.map(range => (
-              <option key={range} value={range}>{range}</option>
+            {timeRanges.map((range) => (
+              <option key={range} value={range}>
+                {range}
+              </option>
             ))}
           </select>
         </div>
-        
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+          <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-3">
+            <CheckCircle className="w-4 h-4 text-green-600" />
+            {filters.status || 'Status'}
+          </label>
           <select
             value={filters.status || 'All'}
             onChange={(e) => onFiltersChange({ ...filters, status: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            {statuses.map(status => (
-              <option key={status} value={status}>{status}</option>
+            {statuses.map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
             ))}
           </select>
         </div>
       </div>
-      
-      <div className="mt-4 flex items-center gap-3">
-        <button
-          onClick={() => onFiltersChange({})}
-          className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
-        >
-          Clear Filters
+
+      <div className="mt-6 flex items-center justify-between pt-6 border-t-2">
+        <button onClick={() => onFiltersChange({})} className="flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-gray-900 transition-colors">
+          <X className="w-4 h-4" />
+          {filters.department}
         </button>
-        <div className="text-xs text-gray-500">
-          Filters will be applied to all exported reports
-        </div>
+        <div className="text-xs text-gray-500 font-medium">{filters.timeRange}</div>
       </div>
     </div>
   );
@@ -125,28 +165,28 @@ function FilterPanel({ filters, onFiltersChange }) {
 function QuickStats() {
   const { getOrganizationAnalytics } = useOrganization();
   const analytics = getOrganizationAnalytics();
-  
+
+  const stats = [
+    { label: analytics.totalEmployees, value: analytics.totalEmployees, icon: Users, color: 'blue' },
+    { label: analytics.totalEnrollments, value: analytics.totalEnrollments, icon: BookOpen, color: 'green' },
+    { label: `${analytics.completionRate}%`, value: analytics.completionRate, icon: TrendingUp, color: 'purple' },
+    { label: `${analytics.totalLearningHours}h`, value: analytics.totalLearningHours, icon: Clock, color: 'orange' }
+  ];
+
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
-        <div className="text-2xl font-bold text-blue-600">{analytics.totalEmployees}</div>
-        <div className="text-sm text-gray-600">Total Employees</div>
-      </div>
-      
-      <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
-        <div className="text-2xl font-bold text-green-600">{analytics.totalEnrollments}</div>
-        <div className="text-sm text-gray-600">Active Enrollments</div>
-      </div>
-      
-      <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
-        <div className="text-2xl font-bold text-purple-600">{analytics.completionRate}%</div>
-        <div className="text-sm text-gray-600">Completion Rate</div>
-      </div>
-      
-      <div className="bg-white border border-gray-200 rounded-lg p-6 text-center">
-        <div className="text-2xl font-bold text-orange-600">{analytics.totalLearningHours}h</div>
-        <div className="text-sm text-gray-600">Learning Hours</div>
-      </div>
+      {stats.map((stat, idx) => {
+        const Icon = stat.icon;
+        return (
+          <div key={idx} className="bg-white border-2 border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all text-center">
+            <div className={`w-14 h-14 rounded-xl bg-${stat.color}-100 flex items-center justify-center mx-auto mb-4`}>
+              <Icon className={`w-7 h-7 text-${stat.color}-600`} />
+            </div>
+            <div className="text-3xl font-extrabold text-gray-900 mb-2">{stat.value}</div>
+            <div className="text-sm text-gray-600 font-medium">{stat.label}</div>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -154,89 +194,89 @@ function QuickStats() {
 export default function OrgReports() {
   const { exportReport } = useOrganization();
   const [filters, setFilters] = useState({});
-  
+
   const reportTypes = [
     {
-      title: 'Employee Progress Report',
-      description: 'Detailed progress tracking for all employees including completion rates, time spent, and current status.',
-      icon: '👥',
-      reportType: 'employee_progress',
+      title: 'Employee Progress',
+      description: filters.department || 'Progress tracking',
+      icon: Users,
+      reportType: 'employee_progress'
     },
     {
-      title: 'Course Analytics Report',
-      description: 'Comprehensive analytics for all courses including enrollment numbers, completion rates, and engagement metrics.',
-      icon: '📚',
-      reportType: 'course_analytics',
+      title: 'Course Analytics',
+      description: filters.timeRange || 'Course metrics',
+      icon: BookOpen,
+      reportType: 'course_analytics'
     },
     {
-      title: 'Department Performance Report',
-      description: 'Department-wise learning metrics, skill gaps analysis, and training effectiveness.',
-      icon: '🏢',
-      reportType: 'department_performance',
+      title: 'Department Performance',
+      description: filters.status || 'Department metrics',
+      icon: Building2,
+      reportType: 'department_performance'
     },
     {
-      title: 'Skills Gap Analysis',
-      description: 'Identify skill gaps across the organization and recommend targeted training programs.',
-      icon: '🎯',
-      reportType: 'skills_gap',
+      title: 'Skills Gap',
+      description: filters.department || 'Gap analysis',
+      icon: Target,
+      reportType: 'skills_gap'
     },
     {
-      title: 'Learning ROI Report',
-      description: 'Return on investment analysis for training programs including cost per completion and business impact.',
-      icon: '💰',
-      reportType: 'learning_roi',
+      title: 'Learning ROI',
+      description: filters.timeRange || 'ROI analysis',
+      icon: DollarSign,
+      reportType: 'learning_roi'
     },
     {
-      title: 'Compliance Training Report',
-      description: 'Track mandatory training completion, certification status, and compliance deadlines.',
-      icon: '✅',
-      reportType: 'compliance_training',
+      title: 'Compliance Training',
+      description: filters.status || 'Compliance tracking',
+      icon: CheckCircle,
+      reportType: 'compliance_training'
     },
     {
       title: 'Engagement Analytics',
-      description: 'User engagement patterns, session duration, and platform usage statistics.',
-      icon: '📊',
-      reportType: 'engagement_analytics',
+      description: filters.timeRange || 'Engagement patterns',
+      icon: BarChart3,
+      reportType: 'engagement_analytics'
     },
     {
-      title: 'Certificate Audit Report',
-      description: 'Complete audit trail of issued certificates, verification status, and expiration tracking.',
-      icon: '🏆',
-      reportType: 'certificate_audit',
-    },
+      title: 'Certificate Audit',
+      description: filters.department || 'Certificate audit',
+      icon: Award,
+      reportType: 'certificate_audit'
+    }
   ];
-  
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Organization Reports</h2>
-        <p className="text-gray-600">Export detailed reports and analytics for your learning programs</p>
+        <h2 className="text-4xl font-extrabold text-gray-900 mb-2">{reportTypes[0].title}</h2>
+        <p className="text-gray-600 font-medium">{reportTypes[0].description}</p>
       </div>
-      
-      {/* Quick Stats */}
+
       <QuickStats />
-      
-      {/* Filter Panel */}
+
       <FilterPanel filters={filters} onFiltersChange={setFilters} />
-      
-      {/* Bulk Export Actions */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <div className="flex items-center justify-between">
+
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           <div>
-            <h3 className="font-medium text-blue-900 mb-1">Bulk Export Options</h3>
-            <p className="text-sm text-blue-800">Export multiple reports at once with current filters applied</p>
+            <h3 className="font-bold text-blue-900 mb-2 flex items-center gap-2 text-lg">
+              <Package className="w-5 h-5" />
+              {filters.department || 'Bulk Export'}
+            </h3>
+            <p className="text-sm text-blue-800">{filters.timeRange || 'Export options'}</p>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={() => {
-                ['employee_progress', 'course_analytics', 'department_performance'].forEach(reportType => {
+                ['employee_progress', 'course_analytics', 'department_performance'].forEach((reportType) => {
                   setTimeout(() => exportReport(reportType, filters), Math.random() * 2000);
                 });
               }}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
             >
-              📦 Export Core Reports
+              <Package className="w-5 h-5" />
+              {filters.status}
             </button>
             <button
               onClick={() => {
@@ -244,17 +284,17 @@ export default function OrgReports() {
                   setTimeout(() => exportReport(report.reportType, filters), index * 500);
                 });
               }}
-              className="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 text-sm"
+              className="px-6 py-3 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 rounded-xl font-bold transition-all flex items-center gap-2"
             >
-              📊 Export All Reports
+              <BarChart3 className="w-5 h-5" />
+              {filters.department}
             </button>
           </div>
         </div>
       </div>
-      
-      {/* Report Cards */}
+
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {reportTypes.map(report => (
+        {reportTypes.map((report) => (
           <ReportCard
             key={report.reportType}
             title={report.title}
@@ -266,94 +306,94 @@ export default function OrgReports() {
           />
         ))}
       </div>
-      
-      {/* Scheduled Reports */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-medium text-gray-900">Scheduled Reports</h3>
-          <button className="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700">
-            + Schedule Report
+
+      <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 shadow-lg">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="font-bold text-gray-900 text-xl">{filters.timeRange || 'Scheduled Reports'}</h3>
+          <button className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-colors flex items-center gap-2 shadow-md">
+            <Plus className="w-5 h-5" />
+            {filters.department}
           </button>
         </div>
-        
+
         <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <div>
-              <div className="font-medium text-gray-900">Monthly Progress Summary</div>
-              <div className="text-sm text-gray-600">Employee progress report • Every 1st of month • 9:00 AM</div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">Active</span>
-              <button className="text-gray-400 hover:text-gray-600">⋯</button>
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <div>
-              <div className="font-medium text-gray-900">Weekly Department Analytics</div>
-              <div className="text-sm text-gray-600">Department performance • Every Monday • 8:00 AM</div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">Active</span>
-              <button className="text-gray-400 hover:text-gray-600">⋯</button>
-            </div>
-          </div>
-          
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <div>
-              <div className="font-medium text-gray-900">Quarterly Skills Gap Analysis</div>
-              <div className="text-sm text-gray-600">Skills gap report • Every quarter • 10:00 AM</div>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">Paused</span>
-              <button className="text-gray-400 hover:text-gray-600">⋯</button>
-            </div>
-          </div>
+          {[
+            { title: 'Monthly Progress', desc: filters.department, status: 'Active', icon: Play },
+            { title: 'Weekly Analytics', desc: filters.timeRange, status: 'Active', icon: Play },
+            { title: 'Quarterly Analysis', desc: filters.status, status: 'Paused', icon: Pause }
+          ].map((item, idx) => {
+            const Icon = item.icon;
+            return (
+              <div key={idx} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                <div>
+                  <div className="font-bold text-gray-900 mb-1">{item.title}</div>
+                  <div className="text-sm text-gray-600">{item.desc}</div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`px-3 py-1.5 ${
+                      item.status === 'Active' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-yellow-100 text-yellow-700 border-yellow-200'
+                    } border-2 rounded-lg text-xs font-bold flex items-center gap-1.5`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    {item.status}
+                  </span>
+                  <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-200 transition-colors">
+                    <MoreVertical className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
-      
-      {/* Export History */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h3 className="font-medium text-gray-900 mb-4">Recent Exports</h3>
-        
+
+      <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 shadow-lg">
+        <h3 className="font-bold text-gray-900 mb-6 text-xl">{filters.status || 'Recent Exports'}</h3>
+
         <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-            <div className="flex items-center gap-3">
-              <span className="text-green-600">✅</span>
-              <div>
-                <div className="font-medium text-gray-900">Employee Progress Report</div>
-                <div className="text-sm text-gray-600">Exported 2 hours ago • 1,247 records</div>
+          {[
+            { title: 'Employee Progress', desc: filters.department, status: 'complete', time: '2 hours ago' },
+            { title: 'Course Analytics', desc: filters.timeRange, status: 'complete', time: 'yesterday' },
+            { title: 'Department Performance', desc: filters.status, status: 'processing', time: '5 minutes ago' }
+          ].map((item, idx) => (
+            <div
+              key={idx}
+              className="flex items-center justify-between p-4 border-2 border-gray-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all"
+            >
+              <div className="flex items-center gap-4">
+                {item.status === 'complete' ? (
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                    <CheckCircle className="w-5 h-5 text-green-600" />
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                    <Loader className="w-5 h-5 text-blue-600 animate-spin" />
+                  </div>
+                )}
+                <div>
+                  <div className="font-bold text-gray-900">{item.title}</div>
+                  <div className="text-sm text-gray-600">
+                    {item.desc} • {item.time}
+                  </div>
+                </div>
               </div>
+              {item.status === 'complete' ? (
+                <button className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center gap-2">
+                  <Download className="w-4 h-4" />
+                  {item.title}
+                </button>
+              ) : (
+                <button className="px-4 py-2 bg-gray-200 text-gray-400 rounded-xl text-sm font-bold cursor-not-allowed">{item.desc}</button>
+              )}
             </div>
-            <button className="text-blue-600 hover:text-blue-800 text-sm">Download</button>
-          </div>
-          
-          <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-            <div className="flex items-center gap-3">
-              <span className="text-green-600">✅</span>
-              <div>
-                <div className="font-medium text-gray-900">Course Analytics Report</div>
-                <div className="text-sm text-gray-600">Exported yesterday • 45 courses</div>
-              </div>
-            </div>
-            <button className="text-blue-600 hover:text-blue-800 text-sm">Download</button>
-          </div>
-          
-          <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-            <div className="flex items-center gap-3">
-              <span className="text-blue-600">⏳</span>
-              <div>
-                <div className="font-medium text-gray-900">Department Performance Report</div>
-                <div className="text-sm text-gray-600">Processing... • Started 5 minutes ago</div>
-              </div>
-            </div>
-            <button className="text-gray-400 cursor-not-allowed text-sm">Processing</button>
-          </div>
+          ))}
         </div>
-        
-        <div className="mt-4 text-center">
-          <button className="text-blue-600 hover:text-blue-800 text-sm">
-            View All Export History →
+
+        <div className="mt-6 text-center">
+          <button className="text-blue-600 hover:text-blue-800 font-bold flex items-center gap-2 mx-auto transition-colors">
+            {filters.timeRange}
+            <RefreshCw className="w-4 h-4" />
           </button>
         </div>
       </div>

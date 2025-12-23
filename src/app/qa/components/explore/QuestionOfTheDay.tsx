@@ -85,7 +85,7 @@ export default function QuestionOfTheDay({
             </div>
             
             <div className="text-xs text-gray-500">
-              Asked by {questionOfTheDay.author.name} • {new Date(questionOfTheDay.createdAt).toLocaleDateString()}
+              Asked by {questionOfTheDay.author?.name ?? 'Unknown'} • {new Date(questionOfTheDay.createdAt).toLocaleDateString()}
             </div>
           </div>
           

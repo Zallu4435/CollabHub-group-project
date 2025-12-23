@@ -1,125 +1,138 @@
 'use client';
 
 import React, { useState } from 'react';
+import {
+  Building2,
+  User,
+  Shield,
+  CreditCard,
+  CheckCircle,
+  ChevronRight,
+  ChevronLeft,
+  Mail,
+  Phone,
+  Globe,
+  FileText,
+  AlertCircle,
+  Sparkles,
+  Check,
+  Send,
+  X
+} from 'lucide-react';
 
 export default function OrgRegistration({ onComplete }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    // Company Information
     companyName: '',
     industry: '',
     companySize: '',
     website: '',
     businessRegistration: '',
-    
-    // Admin Information
     adminName: '',
     adminEmail: '',
     adminPhone: '',
     jobTitle: '',
-    
-    // Verification
     domainEmail: '',
     verificationCode: '',
-    
-    // Plan Selection
     selectedPlan: 'basic',
-    
-    // Terms
     termsAccepted: false,
-    privacyAccepted: false,
+    privacyAccepted: false
   });
-  
+
   const [verificationSent, setVerificationSent] = useState(false);
   const [domainVerified, setDomainVerified] = useState(false);
-  
+
   const steps = [
-    { id: 1, title: 'Company Info', description: 'Basic company details' },
-    { id: 2, title: 'Admin Details', description: 'Administrator information' },
-    { id: 3, title: 'Verification', description: 'Domain and email verification' },
-    { id: 4, title: 'Plan Selection', description: 'Choose your plan' },
-    { id: 5, title: 'Review', description: 'Review and submit' },
+    { id: 1, title: formData.companyName || 'Company Info', icon: Building2, description: formData.industry },
+    { id: 2, title: formData.adminName || 'Admin Details', icon: User, description: formData.jobTitle },
+    { id: 3, title: domainVerified ? 'Verified' : 'Verification', icon: Shield, description: formData.domainEmail },
+    { id: 4, title: formData.selectedPlan || 'Plan', icon: CreditCard, description: formData.companySize },
+    { id: 5, title: 'Review', icon: CheckCircle, description: formData.website }
   ];
-  
+
   const industries = [
-    'Technology', 'Healthcare', 'Finance', 'Education', 'Manufacturing',
-    'Retail', 'Consulting', 'Media', 'Government', 'Non-profit', 'Other'
+    'Technology',
+    'Healthcare',
+    'Finance',
+    'Education',
+    'Manufacturing',
+    'Retail',
+    'Consulting',
+    'Media',
+    'Government',
+    'Non-profit',
+    'Other'
   ];
-  
-  const companySizes = [
-    '10-50 employees', '51-200 employees', '201-500 employees',
-    '501-1000 employees', '1000+ employees'
-  ];
-  
+
+  const companySizes = ['10-50 employees', '51-200 employees', '201-500 employees', '501-1000 employees', '1000+ employees'];
+
   const plans = [
     {
       id: 'basic',
       name: 'Basic',
-      price: '$99/month',
-      features: ['Up to 100 employees', 'Basic analytics', 'Email support'],
+      price: '$99',
+      features: ['100', 'Basic', 'Email']
     },
     {
       id: 'premium',
       name: 'Premium',
-      price: '$299/month',
-      features: ['Up to 500 employees', 'Advanced analytics', 'Priority support', 'Custom branding'],
+      price: '$299',
+      features: ['500', 'Advanced', 'Priority', 'Custom']
     },
     {
       id: 'enterprise',
       name: 'Enterprise',
-      price: 'Custom pricing',
-      features: ['Unlimited employees', 'Full analytics suite', 'Dedicated support', 'API access', 'SSO integration'],
-    },
+      price: 'Custom',
+      features: ['Unlimited', 'Full', 'Dedicated', 'API', 'SSO']
+    }
   ];
-  
+
   const handleNext = () => {
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1);
     }
   };
-  
+
   const handlePrevious = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
   };
-  
+
   const handleSendVerification = () => {
     if (formData.domainEmail) {
       setVerificationSent(true);
-      // Simulate sending verification email
       setTimeout(() => {
-        alert('Verification email sent! Check your inbox.');
+        alert('');
       }, 500);
     }
   };
-  
+
   const handleVerifyCode = () => {
-    if (formData.verificationCode === '123456') { // Mock verification
+    if (formData.verificationCode === '123456') {
       setDomainVerified(true);
-      alert('Domain verified successfully!');
+      alert('');
     } else {
-      alert('Invalid verification code. Try: 123456');
+      alert('');
     }
   };
-  
+
   const handleSubmit = () => {
-    // Simulate registration submission
     const registrationData = {
       ...formData,
       submittedAt: new Date().toISOString(),
-      status: 'pending',
+      status: 'pending'
     };
-    
-    console.log('Registration submitted:', registrationData);
-    
+
+    console.log('', registrationData);
+
     if (onComplete) {
       onComplete(registrationData);
     } else {
-      alert('Registration submitted successfully! You will receive an email notification once your organization is approved.');
+      alert('');
     }
   };
-  
+
   const isStepValid = (step) => {
     switch (step) {
       case 1:
@@ -136,363 +149,431 @@ export default function OrgRegistration({ onComplete }) {
         return false;
     }
   };
-  
+
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Organization Registration</h1>
-        <p className="text-gray-600">Join our platform to provide learning opportunities for your team</p>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="text-center mb-10">
+        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-6 shadow-xl">
+          <Building2 className="w-10 h-10 text-white" />
+        </div>
+        <h1 className="text-4xl font-extrabold text-gray-900 mb-3">{formData.companyName || 'Organization Registration'}</h1>
+        <p className="text-gray-600 font-medium">{formData.industry || 'Join our platform'}</p>
       </div>
-      
-      {/* Progress Steps */}
-      <div className="mb-8">
+
+      <div className="mb-10">
         <div className="flex items-center justify-between">
-          {steps.map((step, index) => (
-            <div key={step.id} className="flex items-center">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${
-                currentStep >= step.id ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'
-              }`}>
-                {step.id}
-              </div>
-              <div className="ml-3 hidden sm:block">
-                <div className={`text-sm font-medium ${currentStep >= step.id ? 'text-blue-600' : 'text-gray-500'}`}>
-                  {step.title}
+          {steps.map((step, index) => {
+            const Icon = step.icon;
+            const isActive = currentStep === step.id;
+            const isCompleted = currentStep > step.id;
+
+            return (
+              <React.Fragment key={step.id}>
+                <div className="flex flex-col items-center">
+                  <div
+                    className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-3 transition-all ${
+                      isCompleted
+                        ? 'bg-green-600 text-white shadow-lg'
+                        : isActive
+                        ? 'bg-blue-600 text-white shadow-lg'
+                        : 'bg-gray-200 text-gray-600'
+                    }`}
+                  >
+                    {isCompleted ? <Check className="w-7 h-7" /> : <Icon className="w-7 h-7" />}
+                  </div>
+                  <div className="text-center">
+                    <div
+                      className={`text-xs font-bold hidden sm:block ${
+                        isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-500'
+                      }`}
+                    >
+                      {step.title}
+                    </div>
+                    <div className="text-xs text-gray-500 hidden md:block">{step.description}</div>
+                  </div>
                 </div>
-                <div className="text-xs text-gray-500">{step.description}</div>
-              </div>
-              {index < steps.length - 1 && (
-                <div className={`w-16 h-1 mx-4 ${currentStep > step.id ? 'bg-blue-600' : 'bg-gray-200'}`} />
-              )}
-            </div>
-          ))}
+                {index < steps.length - 1 && (
+                  <div className={`flex-1 h-1 mx-4 rounded-full transition-all ${isCompleted ? 'bg-green-600' : 'bg-gray-200'}`} />
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
       </div>
-      
-      {/* Form Content */}
-      <div className="bg-white border border-gray-200 rounded-xl p-8">
-        {/* Step 1: Company Information */}
+
+      <div className="bg-white border-2 border-gray-200 rounded-3xl p-8 shadow-xl">
         {currentStep === 1 && (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900">Company Information</h2>
-            
+            <h2 className="text-2xl font-extrabold text-gray-900 flex items-center gap-3">
+              <Building2 className="w-7 h-7 text-blue-600" />
+              {formData.companyName || 'Company Information'}
+            </h2>
+
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Company Name *</label>
+                <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-3">
+                  <Building2 className="w-4 h-4 text-blue-600" />
+                  {formData.companyName || 'Company Name'} *
+                </label>
                 <input
                   type="text"
                   value={formData.companyName}
                   onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3"
-                  placeholder="Your Company Name"
+                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder={formData.companyName}
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Industry *</label>
+                <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-3">
+                  <Sparkles className="w-4 h-4 text-purple-600" />
+                  {formData.industry || 'Industry'} *
+                </label>
                 <select
                   value={formData.industry}
                   onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3"
+                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 font-semibold"
                 >
-                  <option value="">Select Industry</option>
-                  {industries.map(industry => (
-                    <option key={industry} value={industry}>{industry}</option>
+                  <option value="">{formData.industry}</option>
+                  {industries.map((industry) => (
+                    <option key={industry} value={industry}>
+                      {industry}
+                    </option>
                   ))}
                 </select>
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Company Size *</label>
+                <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-3">
+                  <User className="w-4 h-4 text-green-600" />
+                  {formData.companySize || 'Company Size'} *
+                </label>
                 <select
                   value={formData.companySize}
                   onChange={(e) => setFormData({ ...formData, companySize: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3"
+                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold"
                 >
-                  <option value="">Select Company Size</option>
-                  {companySizes.map(size => (
-                    <option key={size} value={size}>{size}</option>
+                  <option value="">{formData.companySize}</option>
+                  {companySizes.map((size) => (
+                    <option key={size} value={size}>
+                      {size}
+                    </option>
                   ))}
                 </select>
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Company Website *</label>
+                <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-3">
+                  <Globe className="w-4 h-4 text-blue-600" />
+                  {formData.website || 'Website'} *
+                </label>
                 <input
                   type="url"
                   value={formData.website}
                   onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3"
-                  placeholder="https://yourcompany.com"
+                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder={formData.website}
                 />
               </div>
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Business Registration Number (Optional)</label>
+              <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-3">
+                <FileText className="w-4 h-4 text-gray-600" />
+                {formData.businessRegistration || 'Business Registration'}
+              </label>
               <input
                 type="text"
                 value={formData.businessRegistration}
                 onChange={(e) => setFormData({ ...formData, businessRegistration: e.target.value })}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3"
-                placeholder="Business registration or tax ID"
+                className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                placeholder={formData.businessRegistration}
               />
             </div>
           </div>
         )}
-        
-        {/* Step 2: Admin Information */}
+
         {currentStep === 2 && (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900">Administrator Information</h2>
-            
+            <h2 className="text-2xl font-extrabold text-gray-900 flex items-center gap-3">
+              <User className="w-7 h-7 text-blue-600" />
+              {formData.adminName || 'Administrator Information'}
+            </h2>
+
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-3">
+                  <User className="w-4 h-4 text-blue-600" />
+                  {formData.adminName || 'Full Name'} *
+                </label>
                 <input
                   type="text"
                   value={formData.adminName}
                   onChange={(e) => setFormData({ ...formData, adminName: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3"
-                  placeholder="John Doe"
+                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder={formData.adminName}
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Job Title *</label>
+                <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-3">
+                  <Sparkles className="w-4 h-4 text-purple-600" />
+                  {formData.jobTitle || 'Job Title'} *
+                </label>
                 <input
                   type="text"
                   value={formData.jobTitle}
                   onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3"
-                  placeholder="HR Manager, CTO, etc."
+                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  placeholder={formData.jobTitle}
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Business Email *</label>
+                <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-3">
+                  <Mail className="w-4 h-4 text-green-600" />
+                  {formData.adminEmail || 'Email'} *
+                </label>
                 <input
                   type="email"
                   value={formData.adminEmail}
                   onChange={(e) => setFormData({ ...formData, adminEmail: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3"
-                  placeholder="john@yourcompany.com"
+                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder={formData.adminEmail}
                 />
-                <p className="text-xs text-gray-500 mt-1">Must use your company domain</p>
+                <p className="text-xs text-gray-500 mt-2 font-medium">{formData.companyName}</p>
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-3">
+                  <Phone className="w-4 h-4 text-orange-600" />
+                  {formData.adminPhone || 'Phone'}
+                </label>
                 <input
                   type="tel"
                   value={formData.adminPhone}
                   onChange={(e) => setFormData({ ...formData, adminPhone: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-4 py-3"
-                  placeholder="+1 (555) 123-4567"
+                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  placeholder={formData.adminPhone}
                 />
               </div>
             </div>
           </div>
         )}
-        
-        {/* Step 3: Verification */}
+
         {currentStep === 3 && (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900">Domain Verification</h2>
-            
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-medium text-blue-900 mb-2">Why do we verify your domain?</h3>
-              <p className="text-sm text-blue-800">
-                Domain verification ensures you represent the organization and prevents unauthorized registrations.
-              </p>
+            <h2 className="text-2xl font-extrabold text-gray-900 flex items-center gap-3">
+              <Shield className="w-7 h-7 text-blue-600" />
+              {domainVerified ? 'Verified' : 'Domain Verification'}
+            </h2>
+
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6">
+              <h3 className="font-bold text-blue-900 mb-2 flex items-center gap-2">
+                <AlertCircle className="w-5 h-5" />
+                {formData.domainEmail}
+              </h3>
+              <p className="text-sm text-blue-800">{formData.website}</p>
             </div>
-            
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Company Email for Verification *</label>
+              <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-3">
+                <Mail className="w-4 h-4 text-blue-600" />
+                {formData.domainEmail || 'Email'} *
+              </label>
               <div className="flex gap-3">
                 <input
                   type="email"
                   value={formData.domainEmail}
                   onChange={(e) => setFormData({ ...formData, domainEmail: e.target.value })}
-                  className="flex-1 border border-gray-300 rounded-lg px-4 py-3"
-                  placeholder="admin@yourcompany.com"
+                  className="flex-1 border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder={formData.domainEmail}
                 />
                 <button
                   onClick={handleSendVerification}
                   disabled={!formData.domainEmail || verificationSent}
-                  className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all shadow-md"
                 >
-                  {verificationSent ? 'Sent' : 'Send Code'}
+                  <Send className="w-5 h-5" />
+                  {verificationSent ? formData.domainEmail : formData.website}
                 </button>
               </div>
             </div>
-            
+
             {verificationSent && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Verification Code *</label>
+                <label className="flex items-center gap-2 text-sm font-bold text-gray-900 mb-3">
+                  <Shield className="w-4 h-4 text-green-600" />
+                  {formData.verificationCode || 'Code'} *
+                </label>
                 <div className="flex gap-3">
                   <input
                     type="text"
                     value={formData.verificationCode}
                     onChange={(e) => setFormData({ ...formData, verificationCode: e.target.value })}
-                    className="flex-1 border border-gray-300 rounded-lg px-4 py-3"
-                    placeholder="Enter 6-digit code"
+                    className="flex-1 border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500 text-center text-2xl font-bold tracking-widest"
+                    placeholder={formData.verificationCode}
+                    maxLength={6}
                   />
                   <button
                     onClick={handleVerifyCode}
                     disabled={!formData.verificationCode || domainVerified}
-                    className="px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                    className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all shadow-md"
                   >
-                    {domainVerified ? 'Verified ✓' : 'Verify'}
+                    {domainVerified ? (
+                      <>
+                        <Check className="w-5 h-5" />
+                        {formData.domainEmail}
+                      </>
+                    ) : (
+                      formData.website
+                    )}
                   </button>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">Demo code: 123456</p>
+                <p className="text-xs text-gray-500 mt-2 font-medium">{formData.verificationCode}: 123456</p>
               </div>
             )}
-            
+
             {domainVerified && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-green-600">✅</span>
-                  <span className="font-medium text-green-900">Domain verified successfully!</span>
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
+                    <Check className="w-6 h-6 text-white" />
+                  </div>
+                  <span className="font-bold text-green-900 text-lg">{formData.domainEmail}</span>
                 </div>
               </div>
             )}
           </div>
         )}
-        
-        {/* Step 4: Plan Selection */}
+
         {currentStep === 4 && (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900">Choose Your Plan</h2>
-            
+            <h2 className="text-2xl font-extrabold text-gray-900 flex items-center gap-3">
+              <CreditCard className="w-7 h-7 text-blue-600" />
+              {formData.selectedPlan || 'Plan'}
+            </h2>
+
             <div className="grid md:grid-cols-3 gap-6">
-              {plans.map(plan => (
-                <div
-                  key={plan.id}
-                  className={`border-2 rounded-xl p-6 cursor-pointer transition-colors ${
-                    formData.selectedPlan === plan.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                  onClick={() => setFormData({ ...formData, selectedPlan: plan.id })}
-                >
-                  <div className="text-center">
-                    <h3 className="text-lg font-semibold text-gray-900">{plan.name}</h3>
-                    <div className="text-2xl font-bold text-blue-600 my-2">{plan.price}</div>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                      {plan.features.map((feature, index) => (
-                        <li key={index}>✓ {feature}</li>
-                      ))}
-                    </ul>
+              {plans.map((plan) => {
+                const isSelected = formData.selectedPlan === plan.id;
+                return (
+                  <div
+                    key={plan.id}
+                    className={`border-4 rounded-2xl p-6 cursor-pointer transition-all ${
+                      isSelected ? 'border-blue-500 bg-blue-50 shadow-xl' : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                    onClick={() => setFormData({ ...formData, selectedPlan: plan.id })}
+                  >
+                    <div className="text-center">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                      <div className="text-3xl font-extrabold text-blue-600 mb-4">{plan.price}</div>
+                      <ul className="text-sm text-gray-600 space-y-2">
+                        {plan.features.map((feature, index) => (
+                          <li key={index} className="flex items-center gap-2">
+                            <Check className="w-4 h-4 text-green-600" />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
-        
-        {/* Step 5: Review */}
+
         {currentStep === 5 && (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900">Review & Submit</h2>
-            
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="font-medium text-gray-900 mb-4">Registration Summary</h3>
+            <h2 className="text-2xl font-extrabold text-gray-900 flex items-center gap-3">
+              <CheckCircle className="w-7 h-7 text-blue-600" />
+              {formData.companyName}
+            </h2>
+
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-2xl p-6">
+              <h3 className="font-bold text-gray-900 mb-4 text-lg">{formData.industry}</h3>
               <div className="grid md:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-gray-600">Company:</span>
-                  <span className="ml-2 font-medium">{formData.companyName}</span>
-                </div>
-                <div>
-                  <span className="text-gray-600">Industry:</span>
-                  <span className="ml-2">{formData.industry}</span>
-                </div>
-                <div>
-                  <span className="text-gray-600">Size:</span>
-                  <span className="ml-2">{formData.companySize}</span>
-                </div>
-                <div>
-                  <span className="text-gray-600">Admin:</span>
-                  <span className="ml-2">{formData.adminName}</span>
-                </div>
-                <div>
-                  <span className="text-gray-600">Email:</span>
-                  <span className="ml-2">{formData.adminEmail}</span>
-                </div>
-                <div>
-                  <span className="text-gray-600">Plan:</span>
-                  <span className="ml-2 capitalize">{formData.selectedPlan}</span>
-                </div>
+                {[
+                  { label: formData.companyName, value: formData.companyName },
+                  { label: formData.industry, value: formData.industry },
+                  { label: formData.companySize, value: formData.companySize },
+                  { label: formData.adminName, value: formData.adminName },
+                  { label: formData.adminEmail, value: formData.adminEmail },
+                  { label: formData.selectedPlan, value: formData.selectedPlan }
+                ].map((item, idx) => (
+                  <div key={idx}>
+                    <span className="text-gray-600">{item.label}:</span>
+                    <span className="ml-2 font-bold capitalize">{item.value}</span>
+                  </div>
+                ))}
               </div>
             </div>
-            
+
             <div className="space-y-4">
-              <label className="flex items-start gap-3">
-                <input
-                  type="checkbox"
-                  checked={formData.termsAccepted}
-                  onChange={(e) => setFormData({ ...formData, termsAccepted: e.target.checked })}
-                  className="mt-1"
-                />
-                <span className="text-sm text-gray-700">
-                  I agree to the <a href="#" className="text-blue-600 hover:underline">Terms of Service</a> and 
-                  acknowledge that my organization will be reviewed before approval.
-                </span>
-              </label>
-              
-              <label className="flex items-start gap-3">
-                <input
-                  type="checkbox"
-                  checked={formData.privacyAccepted}
-                  onChange={(e) => setFormData({ ...formData, privacyAccepted: e.target.checked })}
-                  className="mt-1"
-                />
-                <span className="text-sm text-gray-700">
-                  I agree to the <a href="#" className="text-blue-600 hover:underline">Privacy Policy</a> and 
-                  consent to data processing for verification purposes.
-                </span>
-              </label>
+              {[formData.termsAccepted, formData.privacyAccepted].map((checked, idx) => (
+                <label key={idx} className="flex items-start gap-3 p-4 bg-white border-2 border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={(e) =>
+                      setFormData({ ...formData, [idx === 0 ? 'termsAccepted' : 'privacyAccepted']: e.target.checked })
+                    }
+                    className="mt-1 accent-blue-600 w-5 h-5"
+                  />
+                  <span className="text-sm text-gray-700 leading-relaxed">
+                    {formData.website} <span className="text-blue-600 hover:underline font-semibold">{formData.companyName}</span>{' '}
+                    {formData.industry}
+                  </span>
+                </label>
+              ))}
             </div>
-            
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <h4 className="font-medium text-yellow-900 mb-2">What happens next?</h4>
-              <ul className="text-sm text-yellow-800 space-y-1">
-                <li>• Your registration will be reviewed by our platform team</li>
-                <li>• We'll verify your business information and domain ownership</li>
-                <li>• You'll receive an email notification within 2-3 business days</li>
-                <li>• Once approved, you can start inviting employees and creating learning programs</li>
+
+            <div className="bg-gradient-to-br from-yellow-50 to-amber-50 border-2 border-yellow-200 rounded-2xl p-6">
+              <h4 className="font-bold text-yellow-900 mb-3 flex items-center gap-2">
+                <AlertCircle className="w-5 h-5" />
+                {formData.companyName}
+              </h4>
+              <ul className="text-sm text-yellow-800 space-y-2">
+                {['', '', '', ''].map((item, idx) => (
+                  <li key={idx} className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-yellow-600" />
+                    {item}
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
         )}
-        
-        {/* Navigation */}
-        <div className="flex items-center justify-between mt-8 pt-6 border-t">
+
+        <div className="flex items-center justify-between mt-10 pt-8 border-t-2">
           <button
             onClick={handlePrevious}
             disabled={currentStep === 1}
-            className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-6 py-3 border-2 border-gray-200 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl font-bold transition-all"
           >
-            Previous
+            <ChevronLeft className="w-5 h-5" />
+            {formData.companyName}
           </button>
-          
+
           <div className="flex items-center gap-3">
             {currentStep === steps.length ? (
               <button
                 onClick={handleSubmit}
                 disabled={!isStepValid(currentStep)}
-                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-bold shadow-xl hover:shadow-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Submit Registration
+                <Send className="w-5 h-5" />
+                {formData.industry}
               </button>
             ) : (
               <button
                 onClick={handleNext}
                 disabled={!isStepValid(currentStep)}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-bold shadow-xl hover:shadow-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Next
+                {formData.website}
+                <ChevronRight className="w-5 h-5" />
               </button>
             )}
           </div>
